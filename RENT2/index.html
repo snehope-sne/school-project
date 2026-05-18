@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent A Car - Taking You Places</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-container">
+                    <img src="daketz.jpg" alt="Rent A Car Logo" class="logo">
+                    <span class="brand-name">Rent A Car</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="#fleet" class="nav-link">Our Fleet</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="registration_2.html" class="btn-nav" id="signupBtn">Sign Up</a>
+<a href="login.html" class="btn-nav" id="loginBtn">Log In</a>
+
+<div class="profile-nav" id="profileNav" style="display:none;">
+    <div class="profile-avatar" id="profileAvatar">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <!-- Background circle -->
+        <circle cx="50" cy="50" r="50" fill="url(#avatarGrad)"/>
+        <!-- Head -->
+        <circle cx="50" cy="38" r="18" fill="rgba(255,255,255,0.95)"/>
+        <!-- Body / shoulders -->
+        <ellipse cx="50" cy="82" rx="26" ry="20" fill="rgba(255,255,255,0.95)"/>
+        <defs>
+            <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#ff6b35"/>
+                <stop offset="100%" style="stop-color:#f7931e"/>
+            </linearGradient>
+        </defs>
+    </svg>
+</div>
+    <span class="profile-firstname" id="profileFirstname">John</span>
+    <div class="profile-dropdown" id="profileDropdown">
+        <a href="cust_profile.html">👤 My Profile</a>
+        <a href="cust_profile.html?tab=bookings">📋 My Bookings</a>
+        <div class="dropdown-divider"></div>
+        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+    </div>
+</div>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <!-- Scrolling Cars Background -->
+        <div class="car-scroll-container">
+            <!-- Row 1 -->
+            <div class="car-scroll-row">
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=500" alt="Ford Mustang"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=500" alt="Toyota Camry"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500" alt="Mazda"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=500" alt="SUV"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500" alt="Toyota"></div>
+                <!-- Duplicate for seamless loop -->
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=500" alt="Ford Mustang"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=500" alt="Toyota Camry"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500" alt="Mazda"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=500" alt="SUV"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500" alt="Toyota"></div>
+            </div>
+            
+            <!-- Row 2 -->
+            <div class="car-scroll-row">
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=500" alt="Mazda CX-5"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=500" alt="Ford Expedition"></div>
+
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500" alt="Luxury Car"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1523983302122-73e869e1f850?w=500" alt="Ford Truck"></div>
+                <!-- Duplicate for seamless loop -->
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=500" alt="Mazda CX-5"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=500" alt="Ford Expedition"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500" alt="Luxury Car"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1523983302122-73e869e1f850?w=500" alt="Ford Truck"></div>
+            </div>
+            
+            <!-- Row 3 -->
+            <div class="car-scroll-row">
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?w=500" alt="Toyota RAV4"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=500" alt="Ford Bronco"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500" alt="Sports Car"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500" alt="Luxury Sedan"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=500" alt="Classic Car"></div>
+                <!-- Duplicate for seamless loop -->
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?w=500" alt="Toyota RAV4"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=500" alt="Ford Bronco"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500" alt="Sports Car"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500" alt="Luxury Sedan"></div>
+                <div class="car-item"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=500" alt="Classic Car"></div>
+            </div>
+        </div>
+        
+        <div class="hero-overlay"></div>
+        
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Taking You Places</h1>
+                <p class="hero-subtitle">Experience freedom on the road with our premium car rental service</p>
+                <div class="hero-buttons">
+                   <a href="vehicles.html" class="btn btn-primary">Book Now</a>
+                    <a href="vehicles.html" class="btn btn-secondary">View Fleet</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚗</div>
+                    <h3>Wide Selection</h3>
+                    <p>Choose from our extensive fleet of well-maintained vehicles</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Best Prices</h3>
+                    <p>Competitive rates with no hidden fees</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Quick Booking</h3>
+                    <p>Fast and easy online reservation process</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Fully Insured</h3>
+                    <p>All vehicles come with comprehensive insurance coverage</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📞</div>
+                    <h3>24/7 Support</h3>
+                    <p>Round-the-clock customer service for your convenience</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✓</div>
+                    <h3>Verified Service</h3>
+                    <p>Trusted by thousands of satisfied customers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fleet Preview Section -->
+<section class="fleet-preview" id="fleet">
+    <div class="container">
+        <h2 class="section-title">Our Popular Vehicles</h2>
+        <div class="fleet-grid">
+            <div class="vehicle-card">
+                <div class="vehicle-image">
+                    <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588?w=600&h=400&fit=crop" alt="Economy Car" class="vehicle-img">
+                </div>
+                <div class="vehicle-info">
+                    <h3>Economy</h3>
+                    <p>Perfect for city driving</p>
+                    
+                    <div class="vehicle-price">
+                        <button class="btn-small">View</button>
+                    </div>
+                </div>
+            </div>
+            <div class="vehicle-card">
+                <div class="vehicle-image">
+                    <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=600&h=400&fit=crop" alt="SUV" class="vehicle-img">
+                </div>
+                <div class="vehicle-info">
+                    <h3>SUV</h3>
+                    <p>Spacious and comfortable</p>
+                    
+                    <div class="vehicle-price">
+                        <button class="btn-small">View</button>
+                    </div>
+                </div>
+            </div>
+            <div class="vehicle-card">
+                <div class="vehicle-image">
+                    <img src="https://images.unsplash.com/photo-1563720360172-67b8f3dce741?w=600&h=400&fit=crop" alt="Luxury Car" class="vehicle-img">
+                </div>
+                <div class="vehicle-info">
+                    <h3>Luxury</h3>
+                    <p>Premium experience</p>
+                    
+                    <div class="vehicle-price">
+                        <button class="btn-small">View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Rent A Car</h4>
+                    <p>Taking you places with comfort and style. Your trusted partner for car rentals.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>✉️ info@rentacar.com</li>
+                        <li>📍 123 Main Street, City</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <ul>
+                        <li>Mon-Fri: 8AM - 8PM</li>
+                        <li>Sat-Sun: 9AM - 6PM</li>
+                        <li>24/7 Online Booking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rent A Car. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="script.js"></script>
+    <script>
+    // Override vehicle card buttons for smart navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.vehicle-card .btn-small').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const vehicleCard = this.closest('.vehicle-card');
+                const vehicleName = vehicleCard.querySelector('h3').textContent.trim();
+                
+                // Map vehicle names to categories
+                let category = 'all';
+                if (vehicleName.toLowerCase().includes('economy')) {
+                    category = 'economy';
+                } else if (vehicleName.toLowerCase().includes('suv')) {
+                    category = 'suv';
+                } else if (vehicleName.toLowerCase().includes('luxury')) {
+                    category = 'luxury';
+                }
+                
+                // Redirect to vehicles page with category parameter
+                window.location.href = `vehicles.html?category=${category}`;
+            });
+        });
+    });
+    </script>
+</body>
+</html>
+</body>
+</html>

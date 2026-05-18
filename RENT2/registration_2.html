@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Rent A Car</title>
+    <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-container">
+                    <img src="daketz.jpg" alt="Rent A Car Logo" class="logo">
+                    <span class="brand-name">Rent A Car</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="login.html" class="btn-nav">Login</a>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Registration Section -->
+    <section class="registration-section">
+        <div class="registration-container">
+            <div class="registration-left">
+                <div class="registration-overlay"></div>
+                <div class="registration-content">
+                    <h2>Join Rent A Car!</h2>
+                    <p>Create your account and start renting your favorite vehicles today</p>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Quick and easy booking</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Wide selection of vehicles</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Flexible rental periods</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>24/7 customer support</span>
+                        </div>
+                    </div>
+                    <div class="progress-indicator">
+                        <div class="progress-text">Registration Progress</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-steps">
+                            <span class="step active" data-step="1">Account</span>
+                            <span class="step" data-step="2">Personal</span>
+                            <span class="step" data-step="3">License</span>
+                            <span class="step" data-step="4">Emergency</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="registration-right">
+                <div class="registration-form-container">
+                    <div class="registration-header">
+                        <h1>Create Account</h1>
+                        <p>Fill in your details to get started</p>
+                    </div>
+
+                    <form class="registration-form" id="registrationForm" method="POST" enctype="multipart/form-data" autocomplete="off">
+                        <input type="hidden" name="action" value="submit">
+
+                        <!-- Step 1: Account Information -->
+                        <div class="form-step active" data-step="1">
+                            <h3 class="step-title">Account Information</h3>
+                            
+                            <div class="form-group">
+    <label for="id_number">
+        <i class="icon">🆔</i>
+        ID Number
+    </label>
+    <input 
+        type="text" 
+        id="id_number" 
+        name="idNumber" 
+        placeholder="13-digit National ID number" 
+        maxlength="13"
+        inputmode="numeric"
+        autocomplete="off"
+        required
+    >
+    <span class="error-message" id="id_numberError"></span>
+</div>
+
+<div class="form-group">
+    <label for="email">
+        
+                                    <i class="icon">✉️</i>
+                                    Email Address
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    placeholder="Enter your email address" 
+                                    autocomplete="off"
+                                    required
+                                >
+                                <span class="error-message" id="emailError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">
+                                    <i class="icon">🔒</i>
+                                    Password
+                                </label>
+                                <div class="password-wrapper">
+                                    <input 
+                                        type="password" 
+                                        id="password" 
+                                        name="password" 
+                                        placeholder="Create a strong password" 
+                                        required
+                                        minlength="8"
+                                        autocomplete="new-password"
+                                    >
+                                    <button type="button" class="toggle-password" id="togglePassword">
+                                        <span class="eye-icon">👁️</span>
+                                    </button>
+                                </div>
+                                <div class="password-strength">
+                                    <div class="strength-bar" id="strengthBar"></div>
+                                </div>
+                                <span class="error-message" id="passwordError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirm">
+                                    <i class="icon">🔒</i>
+                                    Confirm Password
+                                </label>
+                                <div class="password-wrapper">
+                                    <input 
+                                        type="password" 
+                                        id="confirm" 
+                                        name="confirmPassword" 
+                                        placeholder="Re-enter your password" 
+                                        required
+                                        autocomplete="new-password"
+                                    >
+                                    <button type="button" class="toggle-password" id="toggleConfirm">
+                                        <span class="eye-icon">👁️</span>
+                                    </button>
+                                </div>
+                                <span class="error-message" id="confirmError"></span>
+                            </div>
+
+                            <button type="button" class="btn btn-next" data-next="2">
+                                <span>Next</span>
+                                <span class="btn-icon">→</span>
+                            </button>
+                        </div>
+
+                        <!-- Step 2: Personal Information -->
+                        <div class="form-step" data-step="2">
+                            <h3 class="step-title">Personal Information</h3>
+
+                           
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">
+                                        <i class="icon">👤</i>
+                                        First Name
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="first_name" 
+                                        name="firstName" 
+                                        placeholder="Your first name" 
+                                        autocomplete="off"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="lastName">
+                                        <i class="icon">👤</i>
+                                        Last Name
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="last_name" 
+                                        name="lastName" 
+                                        placeholder="Your last name" 
+                                        autocomplete="off"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phys_address">
+                                    <i class="icon">📍</i>
+                                    Physical Address
+                                </label>
+                                <textarea 
+                                    id="phys_address" 
+                                    name="address" 
+                                    placeholder="Your complete physical address" 
+                                    required
+                                    rows="3"
+                                ></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">
+                                        <i class="icon">📞</i>
+                                        Phone Number
+                                    </label>
+                                    <input 
+                                        type="tel" 
+                                        id="phone" 
+                                        name="phone" 
+                                        placeholder="+268..." 
+                                        inputmode="numeric"
+                                        autocomplete="off"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="work_phone">
+                                        <i class="icon">📞</i>
+                                        Work Phone
+                                    </label>
+                                    <input 
+                                        type="tel" 
+                                        id="work_phone" 
+                                        name="workPhone" 
+                                        placeholder="+268..." 
+                                        inputmode="numeric"
+                                        autocomplete="off"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">
+                                        <i class="icon">🏙️</i>
+                                        City
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="city" 
+                                        name="city" 
+                                        placeholder="Your city" 
+                                        autocomplete="off"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="country">
+                                        <i class="icon">🌍</i>
+                                        Country
+                                    </label>
+                                    <select id="country" name="country" required>
+                                        <option value="">Select Country</option>
+                                        <option value="Eswatini">Eswatini</option>
+                                        <option value="South Africa">South Africa</option>
+                                        <option value="Botswana">Botswana</option>
+                                        <option value="Mozambique">Mozambique</option>
+                                        <option value="Zimbabwe">Zimbabwe</option>
+                                        <option value="Zambia">Zambia</option>
+                                        <option value="Namibia">Namibia</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-back" data-prev="1">
+                                    <span class="btn-icon">←</span>
+                                    <span>Back</span>
+                                </button>
+                                <button type="button" class="btn btn-next" data-next="3">
+                                    <span>Next</span>
+                                    <span class="btn-icon">→</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: License Information -->
+                        <div class="form-step" data-step="3">
+                            <h3 class="step-title">Driver's License</h3>
+
+                             <div class="form-group">
+                                <label for="license_number">
+                                    <i class="icon">🪪</i>
+                                    License Number
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="license_number" 
+                                    name="licenseNumber" 
+                                    placeholder="Enter your license number" 
+                                    autocomplete="off"
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="license_front">
+                                    <i class="icon">📄</i>
+                                    Upload Front of License
+                                </label>
+                                <div class="file-upload-area" id="frontUploadArea">
+                                    <input 
+                                        type="file" 
+                                        id="license_front" 
+                                        name="licenseFront" 
+                                        accept="image/jpeg,image/png"
+                                        required
+                                    >
+                                    <div class="upload-placeholder">
+                                        <span class="upload-icon">📸</span>
+                                        <span class="upload-text">Click to upload or drag and drop</span>
+                                        <span class="upload-hint">PNG or JPG (max. 5MB)</span>
+                                    </div>
+                                    <div class="preview-container" id="previewFront"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="license_back">
+                                    <i class="icon">📄</i>
+                                    Upload Back of License
+                                </label>
+                                <div class="file-upload-area" id="backUploadArea">
+                                    <input 
+                                        type="file" 
+                                        id="license_back" 
+                                        name="licenseBack" 
+                                        accept="image/jpeg,image/png"
+                                        required
+                                    >
+                                    <div class="upload-placeholder">
+                                        <span class="upload-icon">📸</span>
+                                        <span class="upload-text">Click to upload or drag and drop</span>
+                                        <span class="upload-hint">PNG or JPG (max. 5MB)</span>
+                                    </div>
+                                    <div class="preview-container" id="previewBack"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-back" data-prev="2">
+                                    <span class="btn-icon">←</span>
+                                    <span>Back</span>
+                                </button>
+                                <button type="button" class="btn btn-next" data-next="4">
+                                    <span>Next</span>
+                                    <span class="btn-icon">→</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Next of Kin -->
+                        <div class="form-step" data-step="4">
+                            <h3 class="step-title">Emergency Contact</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="kin_first">
+                                        <i class="icon">👤</i>
+                                        First Name
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="kin_first" 
+                                        name="kinFirstName" 
+                                        placeholder="Emergency contact first name" 
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="kin_last">
+                                        <i class="icon">👤</i>
+                                        Last Name
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="kin_last" 
+                                        name="kinLastName" 
+                                        placeholder="Emergency contact last name" 
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="kin_phone">
+                                    <i class="icon">📞</i>
+                                    Phone Number
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    id="kin_phone" 
+                                    name="kinPhone" 
+                                    placeholder="+268..." 
+                                    inputmode="numeric"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="kin_address">
+                                    <i class="icon">📍</i>
+                                    Physical Address
+                                </label>
+                                <textarea 
+                                    id="kin_address" 
+                                    name="kinAddress" 
+                                    placeholer="Emergency contact address" 
+                                    required
+                                    rows="3"
+                                ></textarea>
+                            </div>
+
+                            
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="terms" name="terms" required>
+                                    <span class="checkmark"></span>
+                                    <span>I agree to the <a href="#">terms and conditions</a></span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-back" data-prev="3">
+                                    <span class="btn-icon">←</span>
+                                    <span>Back</span>
+                                </button>
+                                <button type="submit" class="btn btn-submit">
+                                    <span>Complete Registration</span>
+                                    <span class="btn-icon">✓</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="login-link">
+                            <p>Already have an account? <a href="login.html">Login</a></p>
+                        </div>
+                    </form>
+
+                    <div class="security-note">
+                        <span class="security-icon">🔒</span>
+                        <span>Your information is secure and encrypted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Rent A Car</h4>
+                    <p>Taking you places with comfort and style. Your trusted partner for car rentals.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>✉️ info@rentacar.com</li>
+                        <li>📍 123 Main Street, City</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <ul>
+                        <li>Mon-Fri: 8AM - 8PM</li>
+                        <li>Sat-Sun: 9AM - 6PM</li>
+                        <li>24/7 Online Booking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rent A Car. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="registration.js"></script>
+</body>
+</html>

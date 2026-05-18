@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Vehicle - Rent A Car</title>
+    <link rel="stylesheet" href="booking.css">
+    <style>
+        /* ── Policy Alert ───────────────────────────── */
+        .policy-alert {
+            background: linear-gradient(135deg, #fff8f0 0%, #fff3e6 100%);
+            border: 1.5px solid #ff6b35;
+            border-left: 5px solid #ff6b35;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 0.85rem;
+            align-items: flex-start;
+        }
+        .policy-alert .policy-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .policy-alert .policy-content h4 {
+            margin: 0 0 0.4rem;
+            color: #c94f00;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .policy-alert .policy-content p {
+            margin: 0 0 0.5rem;
+            font-size: 0.82rem;
+            color: #555;
+            line-height: 1.5;
+        }
+        .policy-fee-table {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.3rem;
+        }
+        .policy-fee-badge {
+            background: #ff6b35;
+            color: #fff;
+            border-radius: 20px;
+            padding: 0.22rem 0.7rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .policy-fee-badge.warn {
+            background: #c0392b;
+        }
+
+        /* ── Rental Summary additions ───────────────── */
+        .summary-item.highlight-fee {
+            background: #fff3e0;
+            border-radius: 6px;
+            padding: 0.3rem 0.5rem;
+            margin: 0 -0.5rem;
+        }
+        .summary-item.highlight-fee strong {
+            color: #ff6b35;
+            font-size: 1.05em;
+        }
+
+        /* ── Payment Step ───────────────────────────── */
+        .payment-method-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .pay-tab {
+            flex: 1;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #888;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .pay-tab .tab-icon { font-size: 1.5rem; }
+        .pay-tab.active {
+            border-color: #ff6b35;
+            background: #fff8f5;
+            color: #ff6b35;
+        }
+        .pay-panel { display: none; }
+        .pay-panel.active { display: block; }
+
+        .card-visual {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            color: #fff;
+            margin-bottom: 1.4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-visual::before {
+            content: '';
+            position: absolute;
+            top: -30px; right: -30px;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: rgba(255,107,53,0.2);
+        }
+        .card-visual::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; right: 40px;
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            background: rgba(247,147,30,0.12);
+        }
+        .card-chip { font-size: 2rem; margin-bottom: 0.8rem; display: block; }
+        .card-number-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+        .card-number-display.filled { color: #fff; }
+        .card-meta { display: flex; justify-content: space-between; font-size: 0.78rem; color: #aaa; }
+        .card-meta-val { color: #fff; font-weight: 600; font-size: 0.85rem; }
+
+        .account-info-box {
+            background: #f8f8f8;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .account-info-box.has-account {
+            background: #f0fff4;
+            border-color: #27ae60;
+        }
+        .account-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            font-size: 0.88rem;
+        }
+        .account-info-row:last-child { border-bottom: none; }
+        .account-info-row span:first-child { color: #777; }
+        .account-info-row strong { color: #222; }
+        .balance-amount { color: #27ae60 !important; font-size: 1.1rem; }
+
+        .payment-summary-box {
+            background: linear-gradient(135deg, #fff8f0, #fff3e6);
+            border: 1.5px solid #ff6b35;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .payment-summary-box h4 {
+            margin: 0 0 0.7rem;
+            color: #c94f00;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .pay-sum-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            padding: 0.25rem 0;
+            color: #555;
+        }
+        .pay-sum-row.total {
+            border-top: 1px dashed #ff6b35;
+            margin-top: 0.5rem;
+            padding-top: 0.7rem;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #c94f00;
+        }
+
+        /* ── Processing overlay ─────────────────────── */
+        #paymentProcessingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        #paymentProcessingOverlay.active { display: flex; }
+        .processing-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            text-align: center;
+            min-width: 280px;
+        }
+        .processing-spinner {
+            width: 52px; height: 52px;
+            border: 4px solid #f0e0d6;
+            border-top-color: #ff6b35;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .processing-card h3 { margin: 0 0 0.3rem; color: #222; font-size: 1.1rem; }
+        .processing-card p  { margin: 0; color: #888; font-size: 0.85rem; }
+
+        /* Step 4 progress label */
+        .step[data-step="4"] .step-label { white-space: nowrap; }
+        /* ── Receipt Modal Fix ──────────────────────────── */
+        #bookingSuccessModal {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 9999 !important;
+            background: rgba(0,0,0,0.6) !important;
+            display: none;
+            overflow-y: auto !important;
+            padding: 24px 16px !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+        }
+        #bookingSuccessModal:not(.hidden) {
+            display: flex !important;
+        }
+        #bookingSuccessModal .modal-backdrop {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 0 !important;
+            background: transparent !important;
+        }
+        #bookingSuccessModal .modal-content {
+            position: relative !important;
+            z-index: 1 !important;
+            margin: auto !important;
+            flex-shrink: 0 !important;
+            max-width: 560px !important;
+            width: 100% !important;
+            overflow: visible !important;
+        }
+        .receipt-print-btn {
+            background: linear-gradient(135deg, #1a1a2e, #0f3460) !important;
+            color: #fff !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0.65rem 1.4rem !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.4rem !important;
+        }
+        .receipt-done-btn {
+            background: #ff6b35 !important;
+            color: #fff !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0.65rem 1.4rem !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-container">
+                    <img src="daketz.jpg" alt="Rent A Car Logo" class="logo">
+                    <span class="brand-name">Rent A Car</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="vehicles.html" class="nav-link">Our Fleet</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <div class="profile-nav" id="profileNav" style="display:none;">
+                        <div class="profile-avatar" id="profileAvatar">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                                <circle cx="50" cy="50" r="50" fill="url(#avatarGradB)"/>
+                                <circle cx="50" cy="38" r="18" fill="rgba(255,255,255,0.95)"/>
+                                <ellipse cx="50" cy="82" rx="26" ry="20" fill="rgba(255,255,255,0.95)"/>
+                                <defs>
+                                    <linearGradient id="avatarGradB" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ff6b35"/>
+                                        <stop offset="100%" style="stop-color:#f7931e"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <span class="profile-firstname" id="profileFirstname">User</span>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <a href="index.html">🏠 Home</a>
+                            <a href="vehicles.html">🚗 Our Fleet</a>
+                            <div class="dropdown-divider"></div>
+                            <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Header -->
+    <section class="booking-header">
+        <div class="header-overlay"></div>
+        <div class="container">
+            <h1 class="header-title">Complete Your Booking</h1>
+            <p class="header-subtitle">Just a few steps away from your perfect ride</p>
+        </div>
+    </section>
+
+    <!-- Booking Form Section -->
+    <section class="booking-section">
+        <div class="container">
+            <div class="booking-container">
+
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="step active" data-step="0">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Vehicle</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="1">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Personal Info</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Rental Details</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Review</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Payment</div>
+                    </div>
+                </div>
+
+                <!-- Booking Form -->
+                <form id="bookingForm" class="booking-form" novalidate>
+
+                    <!-- Step 0: Vehicle Confirmation -->
+                    <div class="form-step active" data-step="0">
+                        <h2 class="step-title"><span class="icon">🚗</span> Confirm Your Vehicle</h2>
+                        <p class="step-description">Review the vehicle you've selected</p>
+                        <div class="vehicle-confirmation">
+                            <div class="vehicle-confirmation-image">
+                                <img id="confirmVehicleImage" src="" alt="Selected Vehicle">
+                            </div>
+                            <div class="vehicle-confirmation-details">
+                                <h3 id="confirmVehicleName">Loading...</h3>
+                                <p class="vehicle-category" id="confirmVehicleCategory"></p>
+                                <div class="vehicle-specs-display">
+                                    <div class="spec-display-item"><span class="spec-icon">👥</span><span id="confirmVehicleSeats"></span></div>
+                                    <div class="spec-display-item"><span class="spec-icon">⚙️</span><span id="confirmVehicleTransmission"></span></div>
+                                    <div class="spec-display-item"><span class="spec-icon">⛽</span><span id="confirmVehicleFuel"></span></div>
+                                    <div class="spec-display-item"><span class="spec-icon">🔧</span><span id="confirmVehicleEngine"></span></div>
+                                </div>
+                                <div class="vehicle-features-display">
+                                    <h4>Key Features</h4>
+                                    <ul id="confirmVehicleFeatures"></ul>
+                                </div>
+                                <div class="vehicle-price-display">
+                                    <span class="price-label">Daily Rate</span>
+                                    <span class="price-amount" id="confirmVehiclePrice"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="change-vehicle-section">
+                            <p>Not the right vehicle? <a href="vehicles.html" class="change-vehicle-link">Choose a different vehicle</a></p>
+                        </div>
+                        <input type="hidden" id="vehicleId" name="vehicleId">
+                        <input type="hidden" id="vehicleType" name="vehicleType">
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-next" onclick="nextStep()">
+                                Continue with This Vehicle <span>→</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step" data-step="1">
+                        <h2 class="step-title"><span class="icon">👤</span> Personal Information</h2>
+                        <p class="step-description" style="color:#888; margin-bottom:1.2rem;">
+                            Please confirm your personal details below before continuing.
+                        </p>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="idNo">ID Number</label>
+                                <input type="text" id="idNo" name="idNo" readonly class="autofilled">
+                            </div>
+                            <div class="form-group">
+                                <label for="custFname">First Name</label>
+                                <input type="text" id="custFname" name="custFname" readonly class="autofilled">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="custLname">Last Name</label>
+                                <input type="text" id="custLname" name="custLname" readonly class="autofilled">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" readonly class="autofilled">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" id="phone" name="phone" readonly class="autofilled">
+                            </div>
+                            <div class="form-group">
+                                <label for="physAddress">Physical Address</label>
+                                <input type="text" id="physAddress" name="physAddress" readonly class="autofilled">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="workPhone">Work Phone</label>
+                                <input type="text" id="workPhone" name="workPhone" readonly class="autofilled">
+                            </div>
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" id="city" name="city" readonly class="autofilled">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="country">Country</label>
+                                <input type="text" id="country" name="country" readonly class="autofilled">
+                            </div>
+                        </div>
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-back" onclick="prevStep()"><span>←</span> Back</button>
+                            <button type="button" class="btn btn-next" onclick="nextStep()">Continue <span>→</span></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Rental Details -->
+                    <div class="form-step" data-step="2">
+                        <h2 class="step-title"><span class="icon">📅</span> Rental Details</h2>
+
+                        <!-- ── POLICY ALERT ─────────────────────────────── -->
+                        <div class="policy-alert">
+                            <span class="policy-icon">📋</span>
+                            <div class="policy-content">
+                                <h4>⚠️ Collection & Booking Fee Policy</h4>
+                                <p>After booking, you <strong>must collect your vehicle within 72 hours (3 days)</strong> from the company. Bookings not collected within 72 hours are <strong>automatically cancelled</strong>.</p>
+                                <p>Your booking fee depends on when you plan to collect:</p>
+                                <div class="policy-fee-table">
+                                    <span class="policy-fee-badge">Within 24 hrs → E50</span>
+                                    <span class="policy-fee-badge">Within 48 hrs → E100</span>
+                                    <span class="policy-fee-badge">Within 72 hrs → E150</span>
+                                    <span class="policy-fee-badge warn">After 72 hrs → ❌ Cancelled</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pickupDate">Pickup Date &amp; Time <span class="required">*</span></label>
+                                <input type="datetime-local" id="pickupDate" name="pickupDate" required>
+                                <small id="pickupDateHint" style="color:#888; font-size:0.78rem; margin-top:4px; display:block;">
+                                    You can only select within the next 3 days.
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label for="returnDate">Return Date &amp; Time <span class="required">*</span></label>
+                                <input type="datetime-local" id="returnDate" name="returnDate" required>
+                            </div>
+                        </div>
+
+                        <div class="rental-summary" id="rentalSummary" style="display: none;">
+                            <h3>📋 Rental Summary</h3>
+                            <div class="summary-item">
+                                <span>Vehicle:</span>
+                                <strong id="summaryVehicleName">-</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Duration:</span>
+                                <strong id="rentalDuration">0 days</strong>
+                            </div>
+                            <!-- NEW: Collection window & booking fee -->
+                            <div class="summary-item highlight-fee">
+                                <span>📅 Collection Window:</span>
+                                <strong id="summaryCollectionWindow">-</strong>
+                            </div>
+                            <div class="summary-item highlight-fee">
+                                <span>💳 Booking Fee:</span>
+                                <strong id="summaryBookingFee">-</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Daily Rate:</span>
+                                <strong id="summaryDailyRate">E0</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Estimated Rental Total:</span>
+                                <strong id="estimatedCost">E0.00</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-back" onclick="prevStep()"><span>←</span> Back</button>
+                            <button type="button" class="btn btn-next" onclick="nextStep()">Next Step <span>→</span></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review -->
+                    <div class="form-step" data-step="3">
+                        <h2 class="step-title"><span class="icon">✓</span> Review Your Booking</h2>
+
+                        <div class="review-section">
+                            <h3>Personal Information</h3>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">ID Number:</span>
+                                    <span class="review-value" id="reviewIdNo"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Name:</span>
+                                    <span class="review-value" id="reviewName"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Email:</span>
+                                    <span class="review-value" id="reviewEmail"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Phone:</span>
+                                    <span class="review-value" id="reviewPhone"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Work Phone:</span>
+                                    <span class="review-value" id="reviewWorkPhone"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Address:</span>
+                                    <span class="review-value" id="reviewAddress"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <h3>Rental Details</h3>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">Vehicle:</span>
+                                    <span class="review-value" id="reviewVehicle"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Pickup:</span>
+                                    <span class="review-value" id="reviewPickup"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Return:</span>
+                                    <span class="review-value" id="reviewReturn"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Duration:</span>
+                                    <span class="review-value" id="reviewDuration"></span>
+                                </div>
+                                <!-- NEW: Collection window & booking fee in review -->
+                                <div class="review-item">
+                                    <span class="review-label">📅 Collection Window:</span>
+                                    <span class="review-value" id="reviewCollectionWindow" style="color:#ff6b35; font-weight:600;"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">💳 Booking Fee:</span>
+                                    <span class="review-value" id="reviewBookingFee" style="color:#ff6b35; font-weight:700; font-size:1.05em;"></span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Rental Total:</span>
+                                    <span class="review-value" id="reviewTotalCost"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="terms-section">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="termsAccepted" required>
+                                <span>I agree to the <a href="#" class="terms-link">Terms and Conditions</a>, <a href="#" class="terms-link">Privacy Policy</a>, and the <strong>Collection & Booking Fee Policy</strong> above.</span>
+                            </label>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-back" onclick="prevStep()"><span>←</span> Back</button>
+                            <!-- Goes to payment step, does NOT submit -->
+                            <button type="button" class="btn btn-next" onclick="goToPayment()">
+                                <span>💳</span> Proceed to Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Payment -->
+                    <div class="form-step" data-step="4">
+                        <h2 class="step-title"><span class="icon">💳</span> Payment</h2>
+                        <p class="step-description">Pay your booking fee to confirm your reservation.</p>
+
+                        <!-- Payment summary box -->
+                        <div class="payment-summary-box">
+                            <h4>💰 Amount Due</h4>
+                            <div class="pay-sum-row">
+                                <span>Vehicle</span>
+                                <span id="paySummaryVehicle">-</span>
+                            </div>
+                            <div class="pay-sum-row">
+                                <span>Collection Window</span>
+                                <span id="paySummaryWindow">-</span>
+                            </div>
+                            <div class="pay-sum-row total">
+                                <span>Booking Fee to Pay</span>
+                                <span id="paySummaryFee">E0</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Payment Only -->
+                        <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1.2rem; padding:0.6rem 1rem; background:#fff8f5; border:1.5px solid #ff6b35; border-radius:8px;">
+                            <span style="font-size:1.3rem;">💳</span>
+                            <span style="font-weight:600; color:#ff6b35; font-size:0.9rem;">Secure Card Payment</span>
+                        </div>
+
+                        <!-- Card Panel -->
+                        <div id="panelCard">
+                            <!-- Live card preview -->
+                            <div class="card-visual">
+                                <span class="card-chip">📡</span>
+                                <div class="card-number-display" id="cardPreviewNumber">**** **** **** ****</div>
+                                <div class="card-meta">
+                                    <div>
+                                        <div>Card Holder</div>
+                                        <div class="card-meta-val" id="cardPreviewName">YOUR NAME</div>
+                                    </div>
+                                    <div>
+                                        <div>Expires</div>
+                                        <div class="card-meta-val" id="cardPreviewExpiry">MM/YY</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group" style="flex:2;">
+                                    <label for="cardNumber">Card Number <span class="required">*</span></label>
+                                    <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cardHolder">Card Holder Name <span class="required">*</span></label>
+                                    <input type="text" id="cardHolder" placeholder="e.g. John Dlamini" autocomplete="cc-name">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cardExpiry">Expiry Date <span class="required">*</span></label>
+                                    <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardCvv">CVV <span class="required">*</span></label>
+                                    <input type="password" id="cardCvv" placeholder="•••" maxlength="3" autocomplete="cc-csc">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-navigation" style="margin-top:2rem;">
+                            <button type="button" class="btn btn-back" onclick="prevStep()"><span>←</span> Back</button>
+                            <button type="button" class="btn btn-submit" id="payNowBtn" onclick="processPayment()">
+                                <span>🔒</span> Pay &amp; Confirm Booking
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Processing Overlay -->
+    <div id="paymentProcessingOverlay">
+        <div class="processing-card">
+            <div class="processing-spinner"></div>
+            <h3 id="processingTitle">Processing Payment...</h3>
+            <p id="processingMsg">Please do not close this window</p>
+        </div>
+    </div>
+
+    <!-- Booking Success / Receipt Modal -->
+    <div id="bookingSuccessModal" class="validation-error-modal hidden" style="overflow-y:auto; align-items:flex-start; padding-top:20px; padding-bottom:20px;">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content" style="max-width:560px; width:100%; padding:0; overflow:visible; border-radius:16px; position:relative; z-index:1; margin:auto; flex-shrink:0;">
+            <!-- Receipt -->
+            <div id="paymentReceipt" style="background:#fff; font-family: 'Segoe UI', sans-serif;">
+                <!-- Header band -->
+                <div style="background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); color:#fff; padding:1.6rem 2rem 1rem; position:relative; overflow:hidden;">
+                    <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,107,53,0.18);"></div>
+                    <div style="position:absolute;bottom:-40px;right:40px;width:150px;height:150px;border-radius:50%;background:rgba(247,147,30,0.10);"></div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1;">
+                        <div>
+                            <div style="font-size:1.5rem; font-weight:800; letter-spacing:1px;">🚗 Rent A Car</div>
+                            <div style="font-size:0.75rem; color:#aac4e0; margin-top:2px;">Mbabane, Eswatini &nbsp;|&nbsp; info@rentacar.co.sz</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="background:#ff6b35; color:#fff; border-radius:20px; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; letter-spacing:0.5px;">PAID ✓</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.15); position:relative; z-index:1;">
+                        <div style="font-size:1rem; font-weight:600; color:#f7931e; letter-spacing:0.5px;">PAYMENT RECEIPT</div>
+                        <div style="font-size:0.78rem; color:#aac4e0; margin-top:2px;">Booking Confirmation &amp; Fee Receipt</div>
+                    </div>
+                </div>
+
+                <!-- Receipt Reference Strip -->
+                <div style="background:#f8f9fb; border-bottom:1px dashed #dde3ed; padding:0.75rem 2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
+                    <div>
+                        <div style="font-size:0.7rem; color:#999; text-transform:uppercase; letter-spacing:0.5px;">Booking Reference</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:#1a1a2e; letter-spacing:1px;" id="receiptRefNo">#XXXXXXX</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:0.7rem; color:#999; text-transform:uppercase; letter-spacing:0.5px;">Date Issued</div>
+                        <div style="font-size:0.85rem; font-weight:600; color:#333;" id="receiptDateIssued">—</div>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div style="padding:1.4rem 2rem;">
+
+                    <!-- Customer Info -->
+                    <div style="margin-bottom:1.2rem;">
+                        <div style="font-size:0.72rem; font-weight:700; color:#ff6b35; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:0.6rem; border-bottom:2px solid #fff0ea; padding-bottom:0.3rem;">Customer Details</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.35rem 1rem; font-size:0.84rem;">
+                            <div><span style="color:#888;">Name:</span> <strong id="receiptCustName" style="color:#222;">—</strong></div>
+                            <div><span style="color:#888;">ID No:</span> <strong id="receiptIdNo" style="color:#222;">—</strong></div>
+                            <div><span style="color:#888;">Email:</span> <strong id="receiptEmail" style="color:#222;">—</strong></div>
+                            <div><span style="color:#888;">Phone:</span> <strong id="receiptPhone" style="color:#222;">—</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Info -->
+                    <div style="margin-bottom:1.2rem;">
+                        <div style="font-size:0.72rem; font-weight:700; color:#ff6b35; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:0.6rem; border-bottom:2px solid #fff0ea; padding-bottom:0.3rem;">Vehicle Details</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.35rem 1rem; font-size:0.84rem;">
+                            <div style="grid-column:1/-1;"><span style="color:#888;">Vehicle:</span> <strong id="receiptVehicle" style="color:#222; font-size:0.95rem;">—</strong></div>
+                            <div><span style="color:#888;">Daily Rate:</span> <strong id="receiptDailyRate" style="color:#222;">—</strong></div>
+                            <div><span style="color:#888;">Duration:</span> <strong id="receiptDuration" style="color:#222;">—</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Rental Period -->
+                    <div style="margin-bottom:1.2rem;">
+                        <div style="font-size:0.72rem; font-weight:700; color:#ff6b35; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:0.6rem; border-bottom:2px solid #fff0ea; padding-bottom:0.3rem;">Rental Period</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.35rem 1rem; font-size:0.84rem;">
+                            <div><span style="color:#888;">Pickup:</span><br><strong id="receiptPickup" style="color:#222;">—</strong></div>
+                            <div><span style="color:#888;">Return:</span><br><strong id="receiptReturn" style="color:#222;">—</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Dashed separator -->
+                    <div style="border-top:1px dashed #dde3ed; margin:1rem 0;"></div>
+
+                    <!-- Payment Breakdown -->
+                    <div style="margin-bottom:1rem;">
+                        <div style="font-size:0.72rem; font-weight:700; color:#ff6b35; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:0.7rem; border-bottom:2px solid #fff0ea; padding-bottom:0.3rem;">Payment Breakdown</div>
+                        <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; color:#555;">
+                                <span>Estimated Rental Total</span>
+                                <span id="receiptRentalTotal">—</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; color:#555;">
+                                <span>Collection Window</span>
+                                <span id="receiptWindow">—</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#888;">
+                                <span><em>Note: Booking fee deducted from total at pickup</em></span>
+                            </div>
+                        </div>
+                        <!-- Booking fee total box -->
+                        <div style="margin-top:0.8rem; background:linear-gradient(135deg,#fff8f0,#fff3e6); border:1.5px solid #ff6b35; border-radius:8px; padding:0.75rem 1rem; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div style="font-size:0.75rem; color:#c94f00; font-weight:700; text-transform:uppercase; letter-spacing:0.4px;">Booking Fee Paid Now</div>
+                                <div style="font-size:0.75rem; color:#888; margin-top:2px;">Payment Method: Card</div>
+                            </div>
+                            <div style="font-size:1.5rem; font-weight:800; color:#ff6b35;" id="receiptBookingFee">E0</div>
+                        </div>
+                    </div>
+
+                    <!-- Footer note -->
+                    <div style="background:#f0f4f8; border-radius:8px; padding:0.65rem 0.9rem; font-size:0.76rem; color:#667; line-height:1.5;">
+                        📋 <strong>Important:</strong> Please collect your vehicle within the stated collection window. Failure to collect will result in automatic cancellation. Present this receipt at pickup.
+                    </div>
+                </div>
+
+                <!-- Receipt bottom tear line -->
+                <div style="border-top:2px dashed #dde3ed; padding:1rem 2rem; background:#f8f9fb; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                    <div style="font-size:0.72rem; color:#aaa;">© 2026 Rent A Car · rentacar.co.sz</div>
+                    <div style="font-size:0.72rem; color:#aaa;" id="receiptFooterRef">Ref: —</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons (outside print area) -->
+            <div style="display:flex; gap:0.8rem; justify-content:flex-end; padding:1rem 1.5rem; background:#fff; border-top:2px solid #f0f0f0; border-radius:0 0 16px 16px;">
+                <button class="receipt-print-btn" onclick="printReceipt()">🖨️ Print / Save PDF</button>
+                <button class="receipt-done-btn" onclick="closeBookingSuccessModal()">✓ Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Validation Error Modal -->
+    <div id="validationErrorModal" class="validation-error-modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ Validation Error</h3>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ok" onclick="closeValidationErrorModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Rent A Car</h4>
+                    <p>Taking you places with comfort and style. Your trusted partner for car rentals.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📞 +268 7XXX XXXX</li>
+                        <li>✉️ info@rentacar.co.sz</li>
+                        <li>📍 Mbabane, Eswatini</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <ul>
+                        <li>Mon-Fri: 8AM - 8PM</li>
+                        <li>Sat-Sun: 9AM - 6PM</li>
+                        <li>24/7 Online Booking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rent A Car. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="booking.js"></script>
+</body>
+</html>

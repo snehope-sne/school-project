@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Rent A Car</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ── Profile Page Styles ── */
+        .profile-page {
+            min-height: 100vh;
+            background: var(--dark, #111111);
+            padding-top: 100px;
+            padding-bottom: 60px;
+        }
+
+        /* ── Profile Hero Banner ── */
+        .profile-banner {
+            background: linear-gradient(135deg, #1e1e1e 0%, #252525 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            padding: 40px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-banner::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,107,53,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .profile-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; left: -40px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(247,147,30,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .profile-banner-inner {
+            display: flex;
+            align-items: flex-end;
+            gap: 30px;
+            padding-bottom: 30px;
+        }
+
+        /* ── Profile Avatar Upload ── */
+        .profile-big-avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .profile-big-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid #ff6b35;
+            box-shadow: 0 0 30px rgba(255,107,53,0.4);
+            overflow: hidden;
+            background: #252525;
+            cursor: pointer;
+            transition: box-shadow 0.3s;
+        }
+
+        .profile-big-avatar:hover {
+            box-shadow: 0 0 40px rgba(255,107,53,0.6);
+        }
+
+        .profile-big-avatar svg,
+        .profile-big-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .avatar-upload-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.25s;
+            cursor: pointer;
+            pointer-events: none;
+        }
+
+        .profile-big-avatar-wrapper:hover .avatar-upload-overlay {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .avatar-upload-overlay span {
+            color: #fff;
+            font-size: 1.3rem;
+        }
+
+        .avatar-upload-overlay p {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.65rem;
+            margin-top: 3px;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #avatarFileInput { display: none; }
+
+        .profile-banner-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .profile-banner-info p {
+            color: #888888;
+            font-size: 0.95rem;
+        }
+
+        .profile-banner-info .member-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,107,53,0.15);
+            border: 1px solid rgba(255,107,53,0.3);
+            color: #ff6b35;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* ── Tab Navigation ── */
+        .profile-tabs {
+            display: flex;
+            gap: 0;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .tab-btn {
+            padding: 14px 28px;
+            background: none;
+            border: none;
+            color: #888888;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.25s;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover { color: #ffffff; }
+
+        .tab-btn.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+
+        /* ── Tab Panels ── */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Layout ── */
+        .profile-body {
+            padding: 40px 0;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* ── Cards ── */
+        .profile-card {
+            background: #1e1e1e;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ── Stats Sidebar ── */
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-item:last-child { border-bottom: none; }
+
+        .stat-label {
+            color: #888888;
+            font-size: 0.88rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #ff6b35;
+            font-size: 1.1rem;
+        }
+
+        /* ── Avatar Section in Sidebar ── */
+        .sidebar-avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            gap: 12px;
+        }
+
+        .sidebar-avatar-container {
+            position: relative;
+            width: 90px;
+            height: 90px;
+        }
+
+        .sidebar-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid #ff6b35;
+            overflow: hidden;
+            background: #252525;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,107,53,0.25);
+        }
+
+        .sidebar-avatar svg,
+        .sidebar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .sidebar-avatar-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.25s;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-avatar-container:hover .sidebar-avatar-overlay {
+            opacity: 1;
+        }
+
+        .btn-upload-avatar {
+            padding: 8px 18px;
+            background: transparent;
+            border: 1px solid rgba(255,107,53,0.4);
+            color: #ff6b35;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-upload-avatar:hover {
+            background: rgba(255,107,53,0.1);
+        }
+
+        .avatar-hint {
+            font-size: 0.72rem;
+            color: #666;
+            text-align: center;
+        }
+
+        /* ── Info Grid (view-only) ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .info-field label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        /* Read-only value display */
+        .info-value {
+            background: #1a1a1a;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            min-height: 46px;
+            display: flex;
+            align-items: center;
+            word-break: break-word;
+            user-select: text;
+        }
+
+        .info-value.empty {
+            color: #444;
+            font-style: italic;
+        }
+
+        /* Loading skeleton */
+        .info-value.loading {
+            background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            color: transparent;
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ── Bookings Tab ── */
+        .bookings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .booking-item {
+            background: #252525;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .booking-item:hover {
+            border-color: rgba(255,107,53,0.3);
+        }
+
+        .booking-car-icon {
+            font-size: 2.4rem;
+            flex-shrink: 0;
+        }
+
+        .booking-details { flex: 1; }
+
+        .booking-details h4 {
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .booking-meta {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .booking-meta span {
+            color: #888888;
+            font-size: 0.83rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .booking-status {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .status-active {
+            background: rgba(76,175,80,0.15);
+            color: #4caf50;
+            border: 1px solid rgba(76,175,80,0.3);
+        }
+
+        .status-completed {
+            background: rgba(136,136,136,0.12);
+            color: #aaaaaa;
+            border: 1px solid rgba(136,136,136,0.2);
+        }
+
+        .status-upcoming {
+            background: rgba(255,107,53,0.13);
+            color: #ff6b35;
+            border: 1px solid rgba(255,107,53,0.3);
+        }
+
+        .booking-price {
+            font-weight: 700;
+            color: #ff6b35;
+            font-size: 1.05rem;
+            flex-shrink: 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888888;
+        }
+
+        .empty-state .empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
+        .empty-state p { font-size: 0.95rem; }
+
+        /* ── Security Tab ── */
+        .security-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .security-item:last-child { border-bottom: none; }
+
+        .security-item-info h4 {
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .security-item-info p {
+            color: #888888;
+            font-size: 0.83rem;
+        }
+
+        .btn-security {
+            padding: 9px 20px;
+            background: transparent;
+            border: 1px solid rgba(255,107,53,0.4);
+            color: #ff6b35;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            flex-shrink: 0;
+        }
+
+        .btn-security:hover {
+            background: rgba(255,107,53,0.1);
+        }
+
+        .btn-danger {
+            border-color: rgba(229,57,53,0.4);
+            color: #e53935;
+        }
+
+        .btn-danger:hover {
+            background: rgba(229,57,53,0.08);
+        }
+
+        /* ── Password Modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: #1e1e1e;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .modal-box h3 {
+            color: #ffffff;
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+        }
+
+        .modal-box .info-field { margin-bottom: 16px; }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e1e1e;
+            border: 1px solid rgba(255,107,53,0.4);
+            color: #ffffff;
+            padding: 14px 22px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .toast.hide {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(200px); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to   { transform: translateX(200px); opacity: 0; }
+        }
+
+        /* ── Not-logged-in guard ── */
+        .auth-guard {
+            display: none;
+            min-height: 60vh;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .auth-guard.visible { display: flex; flex-direction: column; }
+        .auth-guard .lock-icon { font-size: 3rem; margin-bottom: 16px; }
+        .auth-guard h2 { color: #ffffff; margin-bottom: 10px; }
+        .auth-guard p  { color: #888888; margin-bottom: 24px; }
+
+        /* ── Licence Upload ── */
+        .licence-upload-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 6px;
+        }
+
+        .licence-side {
+            border: 2px dashed rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.25s, background 0.25s;
+            position: relative;
+            overflow: hidden;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .licence-side:hover {
+            border-color: rgba(255,107,53,0.5);
+            background: rgba(255,107,53,0.04);
+        }
+
+        .licence-side.has-image {
+            border-color: rgba(255,107,53,0.4);
+            border-style: solid;
+        }
+
+        .licence-side .upload-icon { font-size: 1.8rem; }
+
+        .licence-side .upload-label {
+            font-size: 0.78rem;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .licence-side .upload-hint {
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        .licence-side input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .licence-preview {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .licence-side.has-image .licence-preview { display: block; }
+        .licence-side.has-image .upload-icon,
+        .licence-side.has-image .upload-label,
+        .licence-side.has-image .upload-hint { display: none; }
+
+        .licence-remove {
+            position: absolute;
+            top: 6px; right: 6px;
+            background: rgba(229,57,53,0.85);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 22px; height: 22px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .licence-side.has-image .licence-remove { display: flex; }
+
+        /* ── Section divider ── */
+        .form-section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            grid-column: 1 / -1;
+            padding-top: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 4px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .profile-banner-inner { flex-direction: column; align-items: flex-start; }
+            .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
+            .booking-item { flex-wrap: wrap; }
+            .licence-upload-area { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Navigation (same as index) ── -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-container">
+                    <img src="daketz.jpg" alt="Rent A Car Logo" class="logo">
+                    <span class="brand-name">Rent A Car</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+
+                    <a href="registration_2.html" class="btn-nav" id="signupBtn">Sign Up</a>
+                    <a href="login.html" class="btn-nav" id="loginBtn">Log In</a>
+
+                    <div class="profile-nav" id="profileNav" style="display:none;">
+                        <div class="profile-avatar" id="profileAvatar">
+                            <!-- Avatar set dynamically -->
+                        </div>
+                        <span class="profile-firstname" id="profileFirstname">User</span>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <a href="cust_profile.html">👤 My Profile</a>
+                            <a href="cust_profile.html?tab=bookings">📋 My Bookings</a>
+                            <div class="dropdown-divider"></div>
+                            <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- hidden file input for avatar upload -->
+    <input type="file" id="avatarFileInput" accept="image/*">
+
+    <!-- ── Auth Guard (shown if not logged in) ── -->
+    <div class="auth-guard" id="authGuard">
+        <div class="lock-icon">🔒</div>
+        <h2>Login Required</h2>
+        <p>You need to be logged in to view your profile.</p>
+        <a href="login.html" class="btn btn-primary">Log In</a>
+    </div>
+
+    <!-- ── Profile Page (shown when logged in) ── -->
+    <div class="profile-page" id="profilePage" style="display:none;">
+
+        <!-- Banner -->
+        <div class="profile-banner">
+            <div class="container">
+                <div class="profile-banner-inner">
+                    <div class="profile-big-avatar-wrapper">
+                        <div class="profile-big-avatar" id="bannerAvatar">
+                            <!-- Avatar rendered by JS -->
+                        </div>
+                    </div>
+                    <div class="profile-banner-info">
+                        <h1 id="bannerName">Welcome</h1>
+                        <p id="bannerEmail">—</p>
+                        <div class="member-badge">⭐ Member</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="profile-tabs">
+                    <button class="tab-btn active" data-tab="info">👤 Personal Info</button>
+                    <button class="tab-btn" data-tab="bookings">📋 My Bookings</button>
+                    <button class="tab-btn" data-tab="security">🔐 Security</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="profile-body">
+            <div class="container">
+
+                <!-- ── TAB: Personal Info ── -->
+                <div class="tab-panel active" id="tab-info">
+                    <div class="profile-grid">
+
+                        <!-- Sidebar -->
+                        <div>
+                            <!-- Avatar + Upload -->
+                            <div class="profile-card" style="margin-bottom:24px;">
+                                <div class="sidebar-avatar-section">
+                                    <div class="sidebar-avatar-container">
+                                        <div class="sidebar-avatar" id="sidebarAvatar">
+                                            <!-- Rendered by JS -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Summary -->
+                            <div class="profile-card">
+                                <div class="card-title">📊 Account Summary</div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Rentals</span>
+                                    <span class="stat-value" id="statRentals">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Bookings</span>
+                                    <span class="stat-value" id="statActive">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Member Since</span>
+                                    <span class="stat-value" id="statJoined" style="font-size:0.85rem;">—</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info View (read-only) -->
+                        <div class="profile-card">
+                            <div class="card-title">👤 Personal Information</div>
+                            <div class="info-grid" id="profileInfoGrid">
+
+                                <div class="form-section-title">Basic Information</div>
+
+                                <div class="info-field">
+                                    <label>First Name</label>
+                                    <div class="info-value loading" id="viewFirstName">&nbsp;</div>
+                                </div>
+                                <div class="info-field">
+                                    <label>Last Name</label>
+                                    <div class="info-value loading" id="viewLastName">&nbsp;</div>
+                                </div>
+                                <div class="info-field">
+                                    <label>Email</label>
+                                    <div class="info-value loading" id="viewEmail">&nbsp;</div>
+                                </div>
+                                <div class="info-field">
+                                    <label>Phone</label>
+                                    <div class="info-value loading" id="viewPhone">&nbsp;</div>
+                                </div>
+                                <div class="info-field">
+                                    <label>Work Phone</label>
+                                    <div class="info-value loading" id="viewWorkPhone">&nbsp;</div>
+                                </div>
+                                <div class="info-field">
+                                    <label>National ID</label>
+                                    <div class="info-value loading" id="viewNationalId">&nbsp;</div>
+                                </div>
+
+                                <div class="form-section-title">Address</div>
+
+                                <div class="info-field full-width">
+                                    <label>Physical Address</label>
+                                    <div class="info-value loading" id="viewAddress">&nbsp;</div>
+                                </div>
+                                <div class="info-field">
+                                    <label>City</label>
+                                    <div class="info-value loading" id="viewCity">&nbsp;</div>
+                                </div>
+                                <div class="info-field">
+                                    <label>Country</label>
+                                    <div class="info-value loading" id="viewCountry">&nbsp;</div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── TAB: My Bookings ── -->
+                <div class="tab-panel" id="tab-bookings">
+                    <div class="profile-card">
+                        <div class="card-title">📋 Booking History</div>
+                        <div class="bookings-list" id="bookingsList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB: Security ── -->
+                <div class="tab-panel" id="tab-security">
+                    <div class="profile-card">
+                        <div class="card-title">🔐 Security Settings</div>
+
+                        <div class="security-item">
+                            <div class="security-item-info">
+                                <h4>Password</h4>
+                                <p>Last changed: Never</p>
+                            </div>
+                            <button class="btn-security" id="changePasswordBtn">Change Password</button>
+                        </div>
+
+                        <div class="security-item">
+                            <div class="security-item-info">
+                                <h4>Login Email</h4>
+                                <p id="securityEmail">—</p>
+                            </div>
+                            <button class="btn-security" disabled style="opacity:0.4;cursor:not-allowed;">Managed</button>
+                        </div>
+
+                        <div class="security-item">
+                            <div class="security-item-info">
+                                <h4>Profile Photo</h4>
+                                <p>Update or remove your profile picture</p>
+                            </div>
+                            <button class="btn-security" id="securityChangePhotoBtn">Change Photo</button>
+                        </div>
+
+                        <div class="security-item">
+                            <div class="security-item-info">
+                                <h4>Delete Account</h4>
+                                <p>Permanently delete your account and all data</p>
+                            </div>
+                            <button class="btn-security btn-danger" id="deleteAccountBtn">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Change Password Modal ── -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box">
+            <h3>🔐 Change Password</h3>
+            <div class="info-field">
+                <label>Current Password</label>
+                <input type="password" id="currentPwd" placeholder="••••••••">
+            </div>
+            <div class="info-field">
+                <label>New Password</label>
+                <input type="password" id="newPwd" placeholder="At least 8 characters">
+            </div>
+            <div class="info-field">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmPwd" placeholder="Repeat new password">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-profile-cancel" id="closeModal">Cancel</button>
+                <button class="btn-profile-save" id="savePwdBtn">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Rent A Car</h4>
+                    <p>Taking you places with comfort and style.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>✉️ info@rentacar.com</li>
+                        <li>📍 123 Main Street, City</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <ul>
+                        <li>Mon-Fri: 8AM - 8PM</li>
+                        <li>Sat-Sun: 9AM - 6PM</li>
+                        <li>24/7 Online Booking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rent A Car. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+    // ══════════════════════════════════════════════
+    //  PROFILE PAGE — View-Only, DB-fetched
+    //  Reads customer data from booking.php?action=getprofile
+    // ══════════════════════════════════════════════
+    (function () {
+
+        // ── CONFIG ──────────────────────────────────
+        const API = '../backend/booking.php';
+
+        // ── 1. Auth Guard ──────────────────────────
+        const isLoggedIn  = sessionStorage.getItem('userLoggedIn') === 'true';
+        const userData    = JSON.parse(sessionStorage.getItem('dashboardUser') || 'null');
+        const authGuard   = document.getElementById('authGuard');
+        const profilePage = document.getElementById('profilePage');
+
+        if (!isLoggedIn || !userData) {
+            authGuard.classList.add('visible');
+            return;
+        }
+
+        profilePage.style.display = 'block';
+
+        // ── 2. Default SVG avatar ──
+        const defaultAvatarSVG = `
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                <circle cx="50" cy="50" r="50" fill="url(#profGrad)"/>
+                <circle cx="50" cy="38" r="18" fill="rgba(255,255,255,0.95)"/>
+                <ellipse cx="50" cy="82" rx="26" ry="20" fill="rgba(255,255,255,0.95)"/>
+                <defs>
+                    <linearGradient id="profGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ff6b35"/>
+                        <stop offset="100%" style="stop-color:#f7931e"/>
+                    </linearGradient>
+                </defs>
+            </svg>`;
+
+        // ── 3. Render avatar slots ──
+        function renderAvatars(src) {
+            ['bannerAvatar', 'sidebarAvatar', 'profileAvatar'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.innerHTML = src
+                    ? `<img src="${src}" alt="Profile Photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                    : defaultAvatarSVG;
+            });
+        }
+        renderAvatars(sessionStorage.getItem('profileAvatarData') || null);
+
+        // ── 4. Helper: fill a view field ──
+        function fillField(id, value) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove('loading');
+            if (value && String(value).trim() !== '') {
+                el.textContent = value;
+            } else {
+                el.textContent = '—';
+                el.classList.add('empty');
+            }
+        }
+
+        // ── 5. Populate banner from session (instant) ──
+        const sessionName = [userData.firstName, userData.lastName].filter(Boolean).join(' ')
+                            || userData.name || 'User';
+        document.getElementById('bannerName').textContent    = sessionName;
+        document.getElementById('bannerEmail').textContent   = userData.email || '—';
+        document.getElementById('securityEmail').textContent = userData.email || '—';
+        document.getElementById('profileFirstname').textContent =
+            userData.firstName || userData.name?.split(' ')[0] || 'User';
+        document.getElementById('statJoined').textContent =
+            userData.joinedDate
+                ? new Date(userData.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                : new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+        // ── 6. Fetch profile from database ──────────
+        async function loadProfileFromDB() {
+            const email = userData.email || '';
+            if (!email) {
+                showAllEmpty();
+                showToast('⚠️ No email found in session. Please log in again.');
+                return;
+            }
+
+            try {
+                const res  = await fetch(`${API}?action=getprofile&email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+
+                if (data.status !== 'success' || !data.customer) {
+                    showAllEmpty();
+                    showToast('⚠️ Could not load profile from database.');
+                    return;
+                }
+
+                const c = data.customer;
+
+                // Update banner with DB name
+                const dbName = [c.firstName, c.lastName].filter(Boolean).join(' ') || sessionName;
+                document.getElementById('bannerName').textContent = dbName;
+                document.getElementById('profileFirstname').textContent = c.firstName || 'User';
+
+                // Fill view-only fields
+                fillField('viewFirstName', c.firstName);
+                fillField('viewLastName',  c.lastName);
+                fillField('viewEmail',     c.email);
+                fillField('viewPhone',     c.phone);
+                fillField('viewWorkPhone', c.workPhone);
+                fillField('viewNationalId', c.idNumber || c.cust_id);
+                fillField('viewAddress',   c.physAddress);
+                fillField('viewCity',      c.city);
+                fillField('viewCountry',   c.country);
+
+                // Also update session so nav bar stays in sync
+                userData.firstName = c.firstName;
+                userData.lastName  = c.lastName;
+                sessionStorage.setItem('dashboardUser', JSON.stringify(userData));
+
+            } catch (err) {
+                showAllEmpty();
+                showToast('⚠️ Network error loading profile.');
+                console.error('Profile fetch error:', err);
+            }
+        }
+
+        function showAllEmpty() {
+            ['viewFirstName','viewLastName','viewEmail','viewPhone','viewWorkPhone',
+             'viewNationalId','viewAddress','viewCity','viewCountry'].forEach(id => fillField(id, ''));
+        }
+
+        loadProfileFromDB();
+
+        // ── 7. Tabs ──────────────────────────────────
+        function activateTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            const btn   = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+            const panel = document.getElementById('tab-' + tabName);
+            if (btn)   btn.classList.add('active');
+            if (panel) panel.classList.add('active');
+            if (tabName === 'bookings') renderBookings();
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn =>
+            btn.addEventListener('click', function () { activateTab(this.dataset.tab); })
+        );
+
+        const urlTab = new URLSearchParams(window.location.search).get('tab');
+        if (urlTab) activateTab(urlTab);
+
+        // ── 8. Bookings ──────────────────────────────
+        function renderBookings() {
+            const list     = document.getElementById('bookingsList');
+            const bookings = JSON.parse(sessionStorage.getItem('userBookings') || '[]');
+
+            document.getElementById('statRentals').textContent = bookings.length;
+            document.getElementById('statActive').textContent  = bookings.filter(b => b.status === 'active').length;
+
+            if (!bookings.length) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🚗</div>
+                        <p>No bookings yet. <a href="vehicles.html" style="color:#ff6b35;">Browse our fleet</a> to get started!</p>
+                    </div>`;
+                return;
+            }
+
+            list.innerHTML = bookings.map(b => `
+                <div class="booking-item">
+                    <div class="booking-car-icon">🚗</div>
+                    <div class="booking-details">
+                        <h4>${b.vehicle || 'Vehicle'}</h4>
+                        <div class="booking-meta">
+                            <span>📅 ${b.pickupDate || '—'}</span>
+                            <span>🏁 ${b.returnDate || '—'}</span>
+                            <span>📍 ${b.pickupLocation || '—'}</span>
+                        </div>
+                    </div>
+                    <span class="booking-status status-${b.status || 'completed'}">${b.status || 'Completed'}</span>
+                    <div class="booking-price">${b.price ? 'R' + b.price : '—'}</div>
+                </div>`).join('');
+        }
+
+        // Initial stats
+        const bookings = JSON.parse(sessionStorage.getItem('userBookings') || '[]');
+        document.getElementById('statRentals').textContent = bookings.length;
+        document.getElementById('statActive').textContent  = bookings.filter(b => b.status === 'active').length;
+
+        // ── 9. Password Modal ──────────────────────────
+        document.getElementById('changePasswordBtn').addEventListener('click', () =>
+            document.getElementById('passwordModal').classList.add('open'));
+        document.getElementById('closeModal').addEventListener('click', () =>
+            document.getElementById('passwordModal').classList.remove('open'));
+        document.getElementById('passwordModal').addEventListener('click', function (e) {
+            if (e.target === this) this.classList.remove('open');
+        });
+        document.getElementById('savePwdBtn').addEventListener('click', () => {
+            const np = document.getElementById('newPwd').value;
+            const cp = document.getElementById('confirmPwd').value;
+            if (!np)           { showToast('⚠️ Please enter a new password.'); return; }
+            if (np.length < 8) { showToast('⚠️ Password must be at least 8 characters.'); return; }
+            if (np !== cp)     { showToast('⚠️ Passwords do not match.'); return; }
+            document.getElementById('passwordModal').classList.remove('open');
+            showToast('✅ Password updated!');
+        });
+
+        // ── 10. Delete Account ──────────────────────────
+        document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) {
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            }
+        });
+
+        // ── 11. Toast ────────────────────────────────────
+        function showToast(msg) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const t = document.createElement('div');
+            t.className   = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => {
+                t.classList.add('hide');
+                setTimeout(() => t.remove(), 300);
+            }, 3500);
+        }
+
+    })();
+    </script>
+</body>
+</html>

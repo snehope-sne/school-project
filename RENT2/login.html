@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Rent A Car</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body >
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-container">
+                    <img src="daketz.jpg" alt="Rent A Car Logo" class="logo">
+                    <span class="brand-name">Rent A Car</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="registration_2.html" class="btn-nav">Sign Up</a>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Section -->
+    <section class="login-section">
+        <div class="login-container">
+            <div class="login-left">
+                <div class="login-overlay"></div>
+                <div class="login-content">
+                    <h2>Welcome Back!</h2>
+                    <p>Login to access your account and manage your car rentals</p>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>View your bookings</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Manage reservations</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Update profile details</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Track rental history</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-right">
+                <div class="login-form-container">
+                    <div class="login-header">
+                        <h1>Login</h1>
+                        <p>Enter your credentials to access your account</p>
+                    </div>
+
+                    <form class="login-form" id="loginForm" action="/backend/login.php" method="POST" autocomplete="off">
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="icon">✉️</i>
+                                Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="Enter your email address" 
+                                required
+                                autocomplete="off"
+                            >
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="icon">🔒</i>
+                                Password
+                            </label>
+                            <div class="password-wrapper">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    placeholder="Enter your password" 
+                                    required
+                                    autocomplete="new-password"
+                                >
+                                <button type="button" class="toggle-password" id="togglePassword">
+                                    <span class="eye-icon">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="passwordError"></span>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="remember-me">
+                                <input type="checkbox" id="rememberMe" name="rememberMe">
+                                <span class="checkmark"></span>
+                                <span>Remember me</span>
+                            </label>
+                            <a href="forgot-password.php" class="forgot-password">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-login">
+                            <span>Login</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+
+                        <div class="divider">
+                            <span>OR</span>
+                        </div>
+
+                        <div class="social-login">
+                            <button type="button" class="btn-social btn-google">
+                                <span class="social-icon">G</span>
+                                <span>Continue with Google</span>
+                            </button>
+                            <button type="button" class="btn-social btn-facebook">
+                                <span class="social-icon">f</span>
+                                <span>Continue with Facebook</span>
+                            </button>
+                        </div>
+
+                        <div class="signup-link">
+                            <p>Don't have an account? <a href="registration_2.html">Sign Up</a></p>
+                        </div>
+                    </form>
+
+                    <div class="security-note">
+                        <span class="security-icon">🔒</span>
+                        <span>Your information is secure and encrypted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Rent A Car</h4>
+                    <p>Taking you places with comfort and style. Your trusted partner for car rentals.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>✉️ info@rentacar.com</li>
+                        <li>📍 123 Main Street, City</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <ul>
+                        <li>Mon-Fri: 8AM - 8PM</li>
+                        <li>Sat-Sun: 9AM - 6PM</li>
+                        <li>24/7 Online Booking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rent A Car. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="login.js"></script>
+</body>
+</html>

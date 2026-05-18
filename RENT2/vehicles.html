@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Fleet - Rent A Car</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="vehicles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-container">
+                    <img src="daketz.jpg" alt="Rent A Car Logo" class="logo">
+                    <span class="brand-name">Rent A Car</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="vehicles.html" class="nav-link active">Our Fleet</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="registration_2.php" class="btn-nav" id="signupBtn">Sign Up</a>
+<a href="login.html" class="btn-nav" id="loginBtn">Log In</a>
+
+<div class="profile-nav" id="profileNav" style="display:none;">
+    <div class="profile-avatar" id="profileAvatar">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <circle cx="50" cy="50" r="50" fill="url(#avatarGrad2)"/>
+            <circle cx="50" cy="38" r="18" fill="rgba(255,255,255,0.95)"/>
+            <ellipse cx="50" cy="82" rx="26" ry="20" fill="rgba(255,255,255,0.95)"/>
+            <defs>
+                <linearGradient id="avatarGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff6b35"/>
+                    <stop offset="100%" style="stop-color:#f7931e"/>
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+    <span class="profile-firstname" id="profileFirstname">User</span>
+    <div class="profile-dropdown" id="profileDropdown">
+        <a href="#">👤 My Profile</a>
+        <a href="#">📋 My Bookings</a>
+        <div class="dropdown-divider"></div>
+        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+    </div>
+</div>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Our Vehicle Fleet</h1>
+            <p class="page-subtitle">Choose from our wide selection of quality vehicles</p>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-controls">
+                <button class="filter-btn active" data-category="all">All Vehicles</button>
+                <button class="filter-btn" data-category="economy">Economy</button>
+                <button class="filter-btn" data-category="suv">SUV</button>
+                <button class="filter-btn" data-category="luxury">Luxury</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vehicles Section -->
+    <section class="vehicles-section">
+        <div class="container">
+            <!-- Economy Vehicles -->
+            <div class="category-section" id="economy-section">
+                <h2 class="category-title">Economy Vehicles</h2>
+                <p class="category-description">Perfect for city driving and budget-conscious travelers</p>
+                <div class="vehicles-grid" id="economy-grid">
+                    <!-- Economy vehicles will be loaded here -->
+                </div>
+            </div>
+
+            <!-- SUV Vehicles -->
+            <div class="category-section" id="suv-section">
+                <h2 class="category-title">SUV Vehicles</h2>
+                <p class="category-description">Spacious and comfortable for family trips and adventures</p>
+                <div class="vehicles-grid" id="suv-grid">
+                    <!-- SUV vehicles will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Luxury Vehicles -->
+            <div class="category-section" id="luxury-section">
+                <h2 class="category-title">Luxury Vehicles</h2>
+                <p class="category-description">Premium experience for those who demand the best</p>
+                <div class="vehicles-grid" id="luxury-grid">
+                    <!-- Luxury vehicles will be loaded here -->
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div class="no-results" id="no-results" style="display: none;">
+                <div class="no-results-icon">🚗</div>
+                <h3>No vehicles found</h3>
+                <p>Try selecting a different category</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Rent A Car</h4>
+                    <p>Taking you places with comfort and style. Your trusted partner for car rentals.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>✉️ info@rentacar.com</li>
+                        <li>📍 123 Main Street, City</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <ul>
+                        <li>Mon-Fri: 8AM - 8PM</li>
+                        <li>Sat-Sun: 9AM - 6PM</li>
+                        <li>24/7 Online Booking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rent A Car. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Vehicle Details Modal -->
+    <div class="modal" id="vehicle-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modal-vehicle-image" src="" alt="Vehicle">
+                </div>
+                <div class="modal-details">
+                    <h2 id="modal-vehicle-name"></h2>
+                    <p class="modal-category" id="modal-vehicle-category"></p>
+                    <div class="modal-price">
+                        <span class="price-label">Daily Rate:</span>
+                        <span class="price-value" id="modal-vehicle-price"></span>
+                    </div>
+                    <div class="modal-features">
+                        <h3>Features</h3>
+                        <ul id="modal-vehicle-features"></ul>
+                    </div>
+                    <div class="modal-specs">
+                        <h3>Specifications</h3>
+                        <div class="specs-grid" id="modal-vehicle-specs"></div>
+                    </div>
+                    <button class="btn btn-primary btn-block" id="book-vehicle-btn">Book This Vehicle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="vehicles.js"></script>
+</body>
+</html>

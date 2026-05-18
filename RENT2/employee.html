@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Registration - Rent A Car</title>
+    <link rel="stylesheet" href="employee.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-container">
+                    <img src="daketz.jpg" alt="Rent A Car Logo" class="logo">
+                    <span class="brand-name">Rent A Car</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="login.html" class="btn-nav">Login</a>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Registration Section -->
+    <section class="registration-section">
+        <div class="registration-container">
+            <div class="registration-left">
+                <div class="registration-overlay"></div>
+                <div class="registration-content">
+                    <h2>Join Our Team!</h2>
+                    <p>Create your employee account and start managing car rentals with us</p>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Secure employee portal</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Role-based access control</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Real-time rental management</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Dashboard analytics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="registration-right">
+                <div class="registration-form-container">
+                    <div class="registration-header">
+                        <h1>Employee Registration</h1>
+                        <p>Fill in your details to create an employee account</p>
+                    </div>
+
+                    <form class="registration-form" id="employeeRegistrationForm" action="../backend/employee.php" method="POST">
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label for="fullName">
+                                <i class="icon">👤</i>
+                                Full Name
+                            </label>
+                            <input 
+                                type="text" 
+                                id="fullName" 
+                                name="fullName" 
+                                placeholder="Enter your full name" 
+                                required
+                                autocomplete="name"
+                            >
+                            <span class="error-message" id="fullNameError"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="icon">✉️</i>
+                                Work Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="your.name@company.com" 
+                                required
+                                autocomplete="email"
+                            >
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="form-group">
+                            <label for="phone">
+                                <i class="icon">📱</i>
+                                Phone Number
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone" 
+                                placeholder="+268 7XXX XXXX" 
+                                required
+                                autocomplete="tel"
+                            >
+                            <span class="error-message" id="phoneError"></span>
+                        </div>
+
+                        <!-- Role Selection -->
+                        <div class="form-group">
+                            <label for="role">
+                                <i class="icon">🎯</i>
+                                Employee Role
+                            </label>
+                            <div class="role-selection">
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="admin" id="roleAdmin" required>
+                                    <div class="role-card">
+                                        <span class="role-icon">⚙️</span>
+                                        <h3>Admin</h3>
+                                        <p>Full system access and management</p>
+                                    </div>
+                                </label>
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="rental_agent" id="roleAgent" required>
+                                    <div class="role-card">
+                                        <span class="role-icon">🚗</span>
+                                        <h3>Rental Agent</h3>
+                                        <p>Manage customer bookings and rentals</p>
+                                    </div>
+                                </label>
+                            </div>
+                            <span class="error-message" id="roleError"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="icon">🔒</i>
+                                Password
+                            </label>
+                            <div class="password-wrapper">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    placeholder="Create a strong password" 
+                                    required
+                                    autocomplete="new-password"
+                                >
+                                <button type="button" class="toggle-password" id="togglePassword">
+                                    <span class="eye-icon">👁️</span>
+                                </button>
+                            </div>
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill"></div>
+                                </div>
+                                <span class="strength-text"></span>
+                            </div>
+                            <span class="error-message" id="passwordError"></span>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group">
+                            <label for="confirmPassword">
+                                <i class="icon">🔒</i>
+                                Confirm Password
+                            </label>
+                            <div class="password-wrapper">
+                                <input 
+                                    type="password" 
+                                    id="confirmPassword" 
+                                    name="confirmPassword" 
+                                    placeholder="Re-enter your password" 
+                                    required
+                                    autocomplete="new-password"
+                                >
+                                <button type="button" class="toggle-password" id="toggleConfirmPassword">
+                                    <span class="eye-icon">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="confirmPasswordError"></span>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="form-group">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="terms" name="terms" required>
+                                <span class="checkmark"></span>
+                                <span>I agree to the <a href="#" class="link">Terms and Conditions</a> and <a href="#" class="link">Privacy Policy</a></span>
+                            </label>
+                            <span class="error-message" id="termsError"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-register">
+                            <span>Create Employee Account</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+
+                        <div class="login-link">
+                            <p>Already have an account? <a href="login.html">Login Here</a></p>
+                        </div>
+                    </form>
+
+                    <div class="security-note">
+                        <span class="security-icon">🔒</span>
+                        <span>Your information is secure and encrypted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Rent A Car</h4>
+                    <p>Taking you places with comfort and style. Your trusted partner for car rentals.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>✉️ info@rentacar.com</li>
+                        <li>📍 123 Main Street, City</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <ul>
+                        <li>Mon-Fri: 8AM - 8PM</li>
+                        <li>Sat-Sun: 9AM - 6PM</li>
+                        <li>24/7 Online Booking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Rent A Car. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="employee.js"></script>
+</body>
+</html>

@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reports — DARKETZ Car Rental</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    /* ───── CSS VARIABLES ───── */
+    :root {
+      --bg:           #0d0d0f;
+      --surface:      #13141a;
+      --surface2:     #1a1c25;
+      --surface3:     #20222e;
+      --border:       rgba(255,107,53,0.12);
+      --border2:      rgba(255,255,255,0.07);
+      --accent:       #ff6b35;
+      --accent2:      #f7931e;
+      --accent-glow:  rgba(255,107,53,0.25);
+      --green:        #4ade80;
+      --green-dim:    rgba(74,222,128,0.15);
+      --red:          #f87171;
+      --red-dim:      rgba(248,113,113,0.15);
+      --yellow:       #fbbf24;
+      --yellow-dim:   rgba(251,191,36,0.12);
+      --blue:         #60a5fa;
+      --blue-dim:     rgba(96,165,250,0.13);
+      --text:         #f0f0f2;
+      --text-sub:     #9ca3af;
+      --text-muted:   #555b6a;
+      --radius:       14px;
+      --sidebar-w:    240px;
+      --font:         'Syne', sans-serif;
+      --mono:         'JetBrains Mono', monospace;
+    }
+
+    /* ───── RESET ───── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ───── SCROLLBAR ───── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,107,53,0.3); border-radius: 3px; }
+
+    /* ───── SIDEBAR ───── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      transition: transform 0.3s;
+    }
+    .sidebar-brand {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    .brand-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .sidebar-section {
+      padding: 20px 14px 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      transition: all 0.18s;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover {
+      background: rgba(255,107,53,0.08);
+      color: var(--text);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(255,107,53,0.18), rgba(247,147,30,0.1));
+      color: var(--accent);
+      border-color: var(--border);
+    }
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar-back {
+      margin: auto 0 0;
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-back {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      color: var(--text-sub);
+      font-family: var(--font);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-decoration: none;
+    }
+    .btn-back:hover { background: rgba(255,107,53,0.1); color: var(--accent); border-color: var(--border); }
+
+    /* ───── MAIN ───── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ───── TOPBAR ───── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .topbar-title { font-size: 1.15rem; font-weight: 800; }
+    .topbar-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: rgba(255,107,53,0.12);
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+    .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .topbar-date {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .btn-print {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 9px;
+      color: #fff;
+      font-family: var(--font);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.18s, transform 0.15s;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .btn-print:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ───── CONTENT AREA ───── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+    }
+
+    /* ───── REPORT PANELS ───── */
+    .report-panel { display: none; animation: fadeIn 0.3s ease; }
+    .report-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .report-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .report-title { font-size: 1.5rem; font-weight: 800; }
+    .report-subtitle { font-size: 0.85rem; color: var(--text-sub); margin-top: 4px; }
+    .report-meta {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* ───── KPI GRID ───── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .kpi-card:hover { border-color: rgba(255,107,53,0.35); transform: translateY(-2px); }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .kpi-card.green::before  { background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .kpi-card.red::before    { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .kpi-card.yellow::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .kpi-card.blue::before   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .kpi-icon { font-size: 1.5rem; margin-bottom: 10px; }
+    .kpi-value { font-size: 1.65rem; font-weight: 800; font-family: var(--mono); line-height: 1; }
+    .kpi-label { font-size: 0.75rem; color: var(--text-sub); margin-top: 6px; letter-spacing: 0.3px; }
+    .kpi-note { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; font-family: var(--mono); }
+
+    /* ───── CHART SECTION ───── */
+    .chart-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .chart-row.single { grid-template-columns: 1fr; }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .chart-card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chart-card-title span { color: var(--accent); }
+    .chart-wrap { position: relative; height: 240px; }
+
+    /* ───── TABLE ───── */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .table-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .table-card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .table-card-title span { color: var(--accent); }
+    .table-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: rgba(255,107,53,0.04); }
+    tbody tr:last-child { border-bottom: none; }
+    td {
+      padding: 12px 16px;
+      color: var(--text);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    td.mono { font-family: var(--mono); font-size: 0.8rem; }
+    td.muted { color: var(--text-sub); }
+
+    /* ───── BADGES ───── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .badge-green  { background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(74,222,128,0.25); }
+    .badge-red    { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(248,113,113,0.25); }
+    .badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(251,191,36,0.25); }
+    .badge-blue   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(96,165,250,0.25); }
+    .badge-orange { background: rgba(255,107,53,0.13); color: var(--accent); border: 1px solid rgba(255,107,53,0.25); }
+
+    /* ───── FILTER BAR ───── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 20px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-search {
+      position: relative;
+      flex: 1;
+      min-width: 180px;
+    }
+    .filter-search-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .filter-input {
+      width: 100%;
+      padding: 8px 12px 8px 32px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .filter-input:focus { border-color: rgba(255,107,53,0.5); }
+    .filter-input::placeholder { color: var(--text-muted); }
+    .filter-select {
+      padding: 8px 12px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.82rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.18s;
+      min-width: 130px;
+    }
+    .filter-select:focus { border-color: rgba(255,107,53,0.5); }
+    .filter-select option { background: var(--surface2); }
+    .filter-date-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-date-label {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .filter-date {
+      padding: 7px 10px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .filter-date:focus { border-color: rgba(255,107,53,0.5); }
+    .filter-date::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+    .filter-reset {
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      color: var(--text-sub);
+      font-family: var(--font);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .filter-reset:hover { background: rgba(255,107,53,0.1); color: var(--accent); border-color: var(--border); }
+    .filter-result-count {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      margin-left: auto;
+    }
+    .filter-result-count strong { color: var(--accent); }
+    .no-results {
+      text-align: center;
+      padding: 44px 20px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    .no-results-icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.4; }
+    .sort-th { cursor: pointer; user-select: none; }
+    .sort-th:hover { color: var(--accent); }
+    .sort-th::after { content: ' ↕'; opacity: 0.3; font-size: 0.7em; }
+    .sort-th.asc::after  { content: ' ↑'; opacity: 1; color: var(--accent); }
+    .sort-th.desc::after { content: ' ↓'; opacity: 1; color: var(--accent); }
+
+    /* ───── LOADING STATE ───── */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 80px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .spinner {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,107,53,0.15);
+      border-top-color: var(--accent);
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ───── EMPTY STATE ───── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    .empty-state-icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.4; }
+
+    /* ───── DIVIDER ───── */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* ───── PRINT ───── */
+    @media print {
+      body { background: #fff; color: #111; overflow: visible; }
+      .sidebar, .topbar, .btn-print { display: none !important; }
+      .main { margin-left: 0; height: auto; overflow: visible; }
+      .content { overflow: visible; padding: 0; }
+      .report-panel { display: block !important; }
+      .kpi-card, .chart-card, .table-card { border: 1px solid #ddd; break-inside: avoid; }
+      :root { --bg: #fff; --surface: #f9f9f9; --text: #111; --text-sub: #444; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">DARKETZ</div>
+    <div class="brand-sub">Car Rental · Reports</div>
+  </div>
+
+  <div class="sidebar-section">Reports</div>
+  <div class="nav-item active" data-report="revenue" onclick="switchReport('revenue', this)">
+    <span class="nav-icon">💰</span> Revenue
+  </div>
+  <div class="nav-item" data-report="fleet" onclick="switchReport('fleet', this)">
+    <span class="nav-icon">🚗</span> Fleet Utilisation
+  </div>
+  <div class="nav-item" data-report="customers" onclick="switchReport('customers', this)">
+    <span class="nav-icon">👥</span> Customers
+  </div>
+  <div class="nav-item" data-report="late_returns" onclick="switchReport('late_returns', this)">
+    <span class="nav-icon">⚠️</span> Late Returns
+  </div>
+
+  <div class="sidebar-back">
+    <a href="rental_dashboard.html" class="btn-back">← Back to Dashboard</a>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">📊 Reports</div>
+      <div class="topbar-badge" id="topbarBadge">Revenue</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="clock"></div>
+      <button class="btn-print" onclick="window.print()">🖨️ Print Report</button>
+    </div>
+  </div>
+
+  <!-- CONNECTION BANNER -->
+  <div id="conn-banner" style="display:none;align-items:flex-start;gap:12px;padding:13px 32px;border-bottom:1px solid;font-size:0.84rem;line-height:1.6;flex-shrink:0;">
+    <span id="conn-msg" style="flex:1"></span>
+    <button onclick="document.getElementById('conn-banner').style.display='none'" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;flex-shrink:0;margin-top:2px">2715</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══════════════════ REVENUE REPORT ══════════════════ -->
+    <div class="report-panel active" id="panel-revenue">
+      <div class="report-header">
+        <div>
+          <div class="report-title">💰 Revenue Report</div>
+          <div class="report-subtitle">Monthly income from completed rentals — last 12 months</div>
+        </div>
+        <div class="report-meta" id="rev-meta">Generated: —</div>
+      </div>
+
+      <div class="kpi-grid" id="rev-kpis">
+        <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div>Loading…</div>
+      </div>
+
+      <div class="chart-row" id="rev-charts" style="display:none">
+        <div class="chart-card">
+          <div class="chart-card-title"><span>📈</span> Monthly Revenue Trend</div>
+          <div class="chart-wrap"><canvas id="chartRevLine"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title"><span>📊</span> Rentals per Month</div>
+          <div class="chart-wrap"><canvas id="chartRevBar"></canvas></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title"><span>📋</span> Monthly Breakdown</div>
+          <div class="table-count" id="rev-table-count">—</div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-search">
+            <span class="filter-search-icon">🔍</span>
+            <input class="filter-input" id="rev-search" type="text" placeholder="Search month…" oninput="filterRevenue()">
+          </div>
+          <div class="filter-date-group">
+            <span class="filter-date-label">From</span>
+            <input class="filter-date" id="rev-from" type="month" onchange="filterRevenue()">
+            <span class="filter-date-label">To</span>
+            <input class="filter-date" id="rev-to" type="month" onchange="filterRevenue()">
+          </div>
+          <select class="filter-select" id="rev-sort" onchange="filterRevenue()">
+            <option value="">Sort: Default</option>
+            <option value="rev-desc">Revenue ↓</option>
+            <option value="rev-asc">Revenue ↑</option>
+            <option value="rentals-desc">Rentals ↓</option>
+            <option value="rentals-asc">Rentals ↑</option>
+          </select>
+          <button class="filter-reset" onclick="resetRevFilters()">✕ Reset</button>
+          <span class="filter-result-count" id="rev-filter-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="sort-th" onclick="revSortBy('month')">Month</th>
+                <th class="sort-th" onclick="revSortBy('total_rentals')">Total Rentals</th>
+                <th class="sort-th" onclick="revSortBy('total_revenue')">Total Revenue (E)</th>
+                <th class="sort-th" onclick="revSortBy('avg')">Avg Revenue / Rental (E)</th>
+                <th>Performance</th>
+              </tr>
+            </thead>
+            <tbody id="rev-tbody">
+              <tr><td colspan="6"><div class="loading-state"><div class="spinner"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ FLEET REPORT ══════════════════ -->
+    <div class="report-panel" id="panel-fleet">
+      <div class="report-header">
+        <div>
+          <div class="report-title">🚗 Fleet Utilisation Report</div>
+          <div class="report-subtitle">Vehicle performance, availability and estimated earnings</div>
+        </div>
+        <div class="report-meta" id="fleet-meta">Generated: —</div>
+      </div>
+
+      <div class="kpi-grid" id="fleet-kpis">
+        <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div>Loading…</div>
+      </div>
+
+      <div class="chart-row" id="fleet-charts" style="display:none">
+        <div class="chart-card">
+          <div class="chart-card-title"><span>📊</span> Top 8 Vehicles by Rentals</div>
+          <div class="chart-wrap"><canvas id="chartFleetBar"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title"><span>🥧</span> Fleet Status Breakdown</div>
+          <div class="chart-wrap"><canvas id="chartFleetDoughnut"></canvas></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title"><span>📋</span> All Vehicles</div>
+          <div class="table-count" id="fleet-table-count">—</div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-search">
+            <span class="filter-search-icon">🔍</span>
+            <input class="filter-input" id="fleet-search" type="text" placeholder="Search vehicle, plate, VIN…" oninput="filterFleet()">
+          </div>
+          <select class="filter-select" id="fleet-status" onchange="filterFleet()">
+            <option value="">All Statuses</option>
+            <option value="Available">Available</option>
+            <option value="Rented">Rented</option>
+            <option value="Maintenance">Maintenance</option>
+          </select>
+          <select class="filter-select" id="fleet-category" onchange="filterFleet()">
+            <option value="">All Categories</option>
+          </select>
+          <select class="filter-select" id="fleet-sort" onchange="filterFleet()">
+            <option value="">Sort: Most Rentals</option>
+            <option value="rev-desc">Revenue ↓</option>
+            <option value="rev-asc">Revenue ↑</option>
+            <option value="rate-desc">Daily Rate ↓</option>
+            <option value="rate-asc">Daily Rate ↑</option>
+            <option value="days-desc">Days Rented ↓</option>
+            <option value="alpha">A–Z</option>
+          </select>
+          <button class="filter-reset" onclick="resetFleetFilters()">✕ Reset</button>
+          <span class="filter-result-count" id="fleet-filter-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="sort-th" onclick="fleetSortBy('vehicle')">Vehicle (VIN)</th>
+                <th class="sort-th" onclick="fleetSortBy('plate')">Plate</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th class="sort-th" onclick="fleetSortBy('daily_rate')">Daily Rate (E)</th>
+                <th class="sort-th" onclick="fleetSortBy('total_rentals')">Total Rentals</th>
+                <th class="sort-th" onclick="fleetSortBy('total_days_rented')">Days Rented</th>
+                <th class="sort-th" onclick="fleetSortBy('estimated_revenue')">Est. Revenue (E)</th>
+              </tr>
+            </thead>
+            <tbody id="fleet-tbody">
+              <tr><td colspan="9"><div class="loading-state"><div class="spinner"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ CUSTOMERS REPORT ══════════════════ -->
+    <div class="report-panel" id="panel-customers">
+      <div class="report-header">
+        <div>
+          <div class="report-title">👥 Customer Report</div>
+          <div class="report-subtitle">Registered customers ranked by total spend and rental activity</div>
+        </div>
+        <div class="report-meta" id="cust-meta">Generated: —</div>
+      </div>
+
+      <div class="kpi-grid" id="cust-kpis">
+        <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div>Loading…</div>
+      </div>
+
+      <div class="chart-row" id="cust-charts" style="display:none">
+        <div class="chart-card">
+          <div class="chart-card-title"><span>💳</span> Top 8 Customers by Spend (E)</div>
+          <div class="chart-wrap"><canvas id="chartCustSpend"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title"><span>✅</span> Verified vs Unverified</div>
+          <div class="chart-wrap"><canvas id="chartCustVerified"></canvas></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title"><span>📋</span> All Customers</div>
+          <div class="table-count" id="cust-table-count">—</div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-search">
+            <span class="filter-search-icon">🔍</span>
+            <input class="filter-input" id="cust-search" type="text" placeholder="Search name, ID, email, phone…" oninput="filterCustomers()">
+          </div>
+          <select class="filter-select" id="cust-verified" onchange="filterCustomers()">
+            <option value="">All Customers</option>
+            <option value="verified">Verified Only</option>
+            <option value="pending">Pending Only</option>
+          </select>
+          <select class="filter-select" id="cust-sort" onchange="filterCustomers()">
+            <option value="">Sort: Top Spenders</option>
+            <option value="rentals-desc">Most Rentals ↓</option>
+            <option value="rentals-asc">Least Rentals ↑</option>
+            <option value="spent-asc">Least Spent ↑</option>
+            <option value="alpha">A–Z Name</option>
+          </select>
+          <div class="filter-date-group">
+            <span class="filter-date-label">Min Spend</span>
+            <input class="filter-input" id="cust-min-spend" type="number" min="0" placeholder="0" style="width:100px" oninput="filterCustomers()">
+          </div>
+          <button class="filter-reset" onclick="resetCustFilters()">✕ Reset</button>
+          <span class="filter-result-count" id="cust-filter-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th class="sort-th" onclick="custSortBy('name')">Full Name</th>
+                <th>National ID</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Verified</th>
+                <th class="sort-th" onclick="custSortBy('total_rentals')">Total Rentals</th>
+                <th class="sort-th" onclick="custSortBy('total_spent')">Total Spent (E)</th>
+              </tr>
+            </thead>
+            <tbody id="cust-tbody">
+              <tr><td colspan="8"><div class="loading-state"><div class="spinner"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ LATE RETURNS REPORT ══════════════════ -->
+    <div class="report-panel" id="panel-late_returns">
+      <div class="report-header">
+        <div>
+          <div class="report-title">⚠️ Late Returns Report</div>
+          <div class="report-subtitle">Rentals returned after the agreed date — outstanding and historical late fees</div>
+        </div>
+        <div class="report-meta" id="late-meta">Generated: —</div>
+      </div>
+
+      <div class="kpi-grid" id="late-kpis">
+        <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div>Loading…</div>
+      </div>
+
+      <div class="chart-row" id="late-charts" style="display:none">
+        <div class="chart-card">
+          <div class="chart-card-title"><span>⏱️</span> Days Late per Rental</div>
+          <div class="chart-wrap"><canvas id="chartLateDays"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title"><span>💸</span> Late Fee per Rental (E)</div>
+          <div class="chart-wrap"><canvas id="chartLateFee"></canvas></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title"><span>📋</span> Late Return Records</div>
+          <div class="table-count" id="late-table-count">—</div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-search">
+            <span class="filter-search-icon">🔍</span>
+            <input class="filter-input" id="late-search" type="text" placeholder="Search customer, plate, vehicle…" oninput="filterLate()">
+          </div>
+          <select class="filter-select" id="late-severity" onchange="filterLate()">
+            <option value="">All Severities</option>
+            <option value="critical">🚨 Critical (&gt;7d)</option>
+            <option value="high">⚠️ High (4–7d)</option>
+            <option value="low">ℹ️ Low (≤3d)</option>
+          </select>
+          <div class="filter-date-group">
+            <span class="filter-date-label">Return From</span>
+            <input class="filter-date" id="late-from" type="date" onchange="filterLate()">
+            <span class="filter-date-label">To</span>
+            <input class="filter-date" id="late-to" type="date" onchange="filterLate()">
+          </div>
+          <select class="filter-select" id="late-sort" onchange="filterLate()">
+            <option value="">Sort: Most Days Late</option>
+            <option value="fee-desc">Highest Fee ↓</option>
+            <option value="fee-asc">Lowest Fee ↑</option>
+            <option value="days-asc">Least Days Late ↑</option>
+            <option value="date-desc">Return Date ↓</option>
+            <option value="date-asc">Return Date ↑</option>
+          </select>
+          <button class="filter-reset" onclick="resetLateFilters()">✕ Reset</button>
+          <span class="filter-result-count" id="late-filter-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rental ID</th>
+                <th class="sort-th" onclick="lateSortBy('customer')">Customer</th>
+                <th>Phone</th>
+                <th class="sort-th" onclick="lateSortBy('vehicle')">Vehicle</th>
+                <th>Plate</th>
+                <th class="sort-th" onclick="lateSortBy('expected_return')">Expected Return</th>
+                <th class="sort-th" onclick="lateSortBy('actual_return')">Actual Return</th>
+                <th>Hours Late</th>
+                <th class="sort-th" onclick="lateSortBy('days_late')">Days Late</th>
+                <th>Daily Rate (E)</th>
+                <th class="sort-th" onclick="lateSortBy('late_fee')">Late Fee (E)</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody id="late-tbody">
+              <tr><td colspan="12"><div class="loading-state"><div class="spinner"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   DARKETZ Reports — Frontend Logic
+   Connects to: reports.php?action=revenue|fleet|customers|late_returns
+   ═══════════════════════════════════════════════════════════════ */
+
+const API = '../backend/reports.php';
+const CURRENCY = 'E'; // Eswatini Lilangeni
+
+/* ── Utilities ── */
+const fmt    = n => parseFloat(n || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtInt = n => parseInt(n || 0).toLocaleString('en-ZA');
+const now    = () => new Date().toLocaleString('en-ZA', { dateStyle: 'medium', timeStyle: 'short' });
+const fmtDate = d => d ? new Date(d).toLocaleDateString('en-ZA', { year:'numeric', month:'short', day:'numeric' }) : '—';
+const fmtMonth = m => { const [y,mo] = m.split('-'); return new Date(y, mo-1).toLocaleString('default',{month:'short',year:'numeric'}); };
+
+/* ── Chart defaults ── */
+Chart.defaults.color = '#9ca3af';
+Chart.defaults.font.family = "'Syne', sans-serif";
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.tooltip.backgroundColor = '#1a1c25';
+Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,107,53,0.3)';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.padding = 10;
+Chart.defaults.plugins.tooltip.titleColor = '#f0f0f2';
+Chart.defaults.plugins.tooltip.bodyColor = '#9ca3af';
+
+const ORANGE_GRAD = (ctx) => {
+  const g = ctx.createLinearGradient(0, 0, 0, 240);
+  g.addColorStop(0, 'rgba(255,107,53,0.5)');
+  g.addColorStop(1, 'rgba(255,107,53,0.0)');
+  return g;
+};
+
+const PALETTE = ['#ff6b35','#f7931e','#60a5fa','#4ade80','#fbbf24','#c084fc','#f472b6','#34d399'];
+
+/* ── Active charts tracker ── */
+let activeCharts = {};
+function destroyChart(id) { if (activeCharts[id]) { activeCharts[id].destroy(); delete activeCharts[id]; } }
+
+/* ── Clock ── */
+function updateClock() {
+  document.getElementById('clock').textContent = new Date().toLocaleString('en-ZA', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+setInterval(updateClock, 1000); updateClock();
+
+/* ── Report switching ── */
+let currentReport = 'revenue';
+const loaded = {};
+
+function switchReport(name, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('topbarBadge').textContent = el.textContent.trim();
+  currentReport = name;
+  if (!loaded[name]) loadReport(name);
+}
+
+/* ══════════════════════════════════
+   CONNECTION TEST BANNER
+══════════════════════════════════ */
+async function testConnection() {
+  const banner = document.getElementById('conn-banner');
+  const msg    = document.getElementById('conn-msg');
+  try {
+    const res = await fetch(`${API}?action=revenue`);
+    const raw = await res.text();
+
+    // Not OK HTTP status (404, 500, etc.)
+    if (!res.ok) {
+      banner.style.background = 'rgba(248,113,113,0.12)';
+      banner.style.borderColor = 'rgba(248,113,113,0.35)';
+      msg.innerHTML = `❌ <strong>HTTP ${res.status}</strong> — PHP file not found or server error.<br>
+        <span style="font-size:0.78rem">Check that <code>${API}</code> is correct relative to where <strong>reports.html</strong> lives.<br>
+        Your folder layout should be: <code>frontend/reports.html</code> and <code>backend/reports.php</code>.</span>`;
+      banner.style.display = 'flex';
+      return false;
+    }
+
+    // Try to parse as JSON
+    let json;
+    try {
+      json = JSON.parse(raw);
+    } catch(e) {
+      banner.style.background = 'rgba(248,113,113,0.12)';
+      banner.style.borderColor = 'rgba(248,113,113,0.35)';
+      // Show first 300 chars of raw response so they can see the PHP error
+      const preview = raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').substring(0, 400);
+      msg.innerHTML = `❌ <strong>PHP returned non-JSON</strong> — likely a PHP error on the server.<br>
+        <span style="font-size:0.78rem">Raw response preview:</span><br>
+        <code style="font-size:0.72rem;white-space:pre-wrap;display:block;margin-top:6px;padding:8px;background:rgba(0,0,0,0.3);border-radius:6px">${preview}</code>`;
+      banner.style.display = 'flex';
+      return false;
+    }
+
+    // JSON fine but status is error
+    if (json.status !== 'success') {
+      banner.style.background = 'rgba(251,191,36,0.1)';
+      banner.style.borderColor = 'rgba(251,191,36,0.35)';
+      msg.innerHTML = `⚠️ <strong>Connected but got an error:</strong> ${json.message || 'Unknown error from reports.php'}`;
+      banner.style.display = 'flex';
+      return false;
+    }
+
+    // All good
+    banner.style.background = 'rgba(74,222,128,0.08)';
+    banner.style.borderColor = 'rgba(74,222,128,0.25)';
+    msg.innerHTML = `✅ <strong>Connected to reports.php successfully.</strong> Loading reports…`;
+    banner.style.display = 'flex';
+    setTimeout(() => banner.style.display = 'none', 3000);
+    return true;
+
+  } catch(e) {
+    banner.style.background = 'rgba(248,113,113,0.12)';
+    banner.style.borderColor = 'rgba(248,113,113,0.35)';
+    msg.innerHTML = `❌ <strong>Cannot reach ${API}</strong> — ${e.message}<br>
+      <span style="font-size:0.78rem">Make sure XAMPP is running and the path is correct.<br>
+      Try visiting <a href="${API}?action=revenue" target="_blank" style="color:#60a5fa">${API}?action=revenue</a> directly in your browser.</span>`;
+    banner.style.display = 'flex';
+    return false;
+  }
+}
+
+/* ══════════════════════════════════
+   FETCH wrapper
+══════════════════════════════════ */
+async function fetchReport(action) {
+  const res = await fetch(`${API}?action=${action}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status} — check that reports.php exists at: ${API}`);
+  const raw = await res.text();
+  let json;
+  try {
+    json = JSON.parse(raw);
+  } catch(e) {
+    // Strip HTML tags for a cleaner error message
+    const plain = raw.replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim().substring(0,200);
+    throw new Error(`PHP error: ${plain}`);
+  }
+  if (json.status !== 'success') throw new Error(json.message || 'reports.php returned an error');
+  return json.data;
+}
+
+function loadReport(name) {
+  loaded[name] = true;
+  const map = { revenue: loadRevenue, fleet: loadFleet, customers: loadCustomers, late_returns: loadLateReturns };
+  (map[name] || (() => {}))();
+}
+
+/* ── Cached report data (for client-side filtering) ── */
+let revData = [], fleetData = [], custData = [], lateData = [];
+let revSortState   = { col: null, dir: 1 };
+let fleetSortState = { col: null, dir: 1 };
+let custSortState  = { col: null, dir: 1 };
+let lateSortState  = { col: null, dir: 1 };
+
+/* ══════════════════════════════════
+   REVENUE REPORT
+══════════════════════════════════ */
+async function loadRevenue() {
+  try {
+    const data = await fetchReport('revenue');
+    document.getElementById('rev-meta').textContent = `Generated: ${now()}`;
+
+    if (!data.length) { showEmpty('rev-kpis', 'rev-tbody', 6); return; }
+
+    const totalRev    = data.reduce((s,r) => s + r.total_revenue, 0);
+    const totalRent   = data.reduce((s,r) => s + r.total_rentals, 0);
+    const maxRevMonth = data.reduce((a,b) => a.total_revenue > b.total_revenue ? a : b);
+    const avgPerRent  = totalRent ? totalRev / totalRent : 0;
+
+    document.getElementById('rev-kpis').innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(totalRev)}</div>
+        <div class="kpi-label">Total Revenue (12 months)</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-value">${fmtInt(totalRent)}</div>
+        <div class="kpi-label">Total Completed Rentals</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon">📐</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(avgPerRent)}</div>
+        <div class="kpi-label">Avg Revenue / Rental</div>
+      </div>
+      <div class="kpi-card yellow">
+        <div class="kpi-icon">🏆</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(maxRevMonth.total_revenue)}</div>
+        <div class="kpi-label">Best Month</div>
+        <div class="kpi-note">${fmtMonth(maxRevMonth.month)}</div>
+      </div>
+    `;
+
+    // Charts
+    document.getElementById('rev-charts').style.display = '';
+    const labels = [...data].reverse().map(r => fmtMonth(r.month));
+    const revVals = [...data].reverse().map(r => r.total_revenue);
+    const rentVals = [...data].reverse().map(r => r.total_rentals);
+
+    destroyChart('revLine');
+    const ctxL = document.getElementById('chartRevLine').getContext('2d');
+    activeCharts['revLine'] = new Chart(ctxL, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: `Revenue (${CURRENCY})`,
+          data: revVals,
+          borderColor: '#ff6b35',
+          backgroundColor: ORANGE_GRAD(ctxL),
+          borderWidth: 2.5,
+          pointBackgroundColor: '#ff6b35',
+          pointRadius: 4,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { callback: v => `E${(v/1000).toFixed(0)}k` } } } }
+    });
+
+    destroyChart('revBar');
+    activeCharts['revBar'] = new Chart(document.getElementById('chartRevBar'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Rentals',
+          data: rentVals,
+          backgroundColor: 'rgba(96,165,250,0.6)',
+          borderColor: '#60a5fa',
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } } } }
+    });
+
+    // Table
+    revData = data;
+    renderRevTable(data);
+
+  } catch (e) { showError('rev-kpis', 'rev-tbody', 6, e.message); }
+}
+
+function renderRevTable(rows) {
+  const maxRev = revData.length ? Math.max(...revData.map(r => r.total_revenue)) : 1;
+  document.getElementById('rev-table-count').textContent = `${revData.length} months`;
+  if (!rows.length) {
+    document.getElementById('rev-tbody').innerHTML = `<tr><td colspan="6"><div class="no-results"><div class="no-results-icon">🔍</div>No months match your filters.</div></td></tr>`;
+    document.getElementById('rev-filter-count').innerHTML = `<strong>0</strong> of ${revData.length}`;
+    return;
+  }
+  document.getElementById('rev-filter-count').innerHTML = `<strong>${rows.length}</strong> of ${revData.length} months`;
+  document.getElementById('rev-tbody').innerHTML = rows.map((r, i) => {
+    const avg = r.total_rentals ? r.total_revenue / r.total_rentals : 0;
+    const pct = maxRev ? Math.round((r.total_revenue / maxRev) * 100) : 0;
+    const bar = `<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#ff6b35,#f7931e);border-radius:3px"></div></div><span style="font-family:var(--mono);font-size:0.72rem;color:var(--text-muted)">${pct}%</span></div>`;
+    return `<tr>
+      <td class="mono muted">${i+1}</td>
+      <td><strong>${fmtMonth(r.month)}</strong></td>
+      <td class="mono">${fmtInt(r.total_rentals)}</td>
+      <td class="mono">${CURRENCY} ${fmt(r.total_revenue)}</td>
+      <td class="mono">${CURRENCY} ${fmt(avg)}</td>
+      <td style="min-width:160px">${bar}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterRevenue() {
+  const q    = (document.getElementById('rev-search').value || '').toLowerCase();
+  const from = document.getElementById('rev-from').value;
+  const to   = document.getElementById('rev-to').value;
+  const sort = document.getElementById('rev-sort').value;
+
+  let d = revData.filter(r => {
+    if (q && !fmtMonth(r.month).toLowerCase().includes(q) && !r.month.includes(q)) return false;
+    if (from && r.month < from) return false;
+    if (to   && r.month > to)   return false;
+    return true;
+  });
+
+  if (sort === 'rev-desc')          d.sort((a,b) => b.total_revenue - a.total_revenue);
+  else if (sort === 'rev-asc')      d.sort((a,b) => a.total_revenue - b.total_revenue);
+  else if (sort === 'rentals-desc') d.sort((a,b) => b.total_rentals - a.total_rentals);
+  else if (sort === 'rentals-asc')  d.sort((a,b) => a.total_rentals - b.total_rentals);
+  else if (revSortState.col) {
+    d.sort((a,b) => {
+      const av = a[revSortState.col] || 0, bv = b[revSortState.col] || 0;
+      return revSortState.dir * (av < bv ? -1 : av > bv ? 1 : 0);
+    });
+  }
+  renderRevTable(d);
+}
+
+function resetRevFilters() {
+  ['rev-search','rev-from','rev-to'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('rev-sort').value = '';
+  revSortState = { col: null, dir: 1 };
+  document.querySelectorAll('#panel-revenue .sort-th').forEach(th => th.className = 'sort-th');
+  renderRevTable(revData);
+  document.getElementById('rev-filter-count').innerHTML = '';
+}
+
+function revSortBy(col) {
+  if (revSortState.col === col) revSortState.dir *= -1;
+  else { revSortState.col = col; revSortState.dir = 1; }
+  document.querySelectorAll('#panel-revenue .sort-th').forEach(th => th.className = 'sort-th');
+  const th = document.querySelector(`#panel-revenue .sort-th[onclick="revSortBy('${col}')"]`);
+  if (th) th.className = 'sort-th ' + (revSortState.dir === 1 ? 'asc' : 'desc');
+  filterRevenue();
+}
+
+/* ══════════════════════════════════
+   FLEET REPORT
+══════════════════════════════════ */
+async function loadFleet() {
+  try {
+    const data = await fetchReport('fleet');
+    document.getElementById('fleet-meta').textContent = `Generated: ${now()}`;
+
+    if (!data.length) { showEmpty('fleet-kpis', 'fleet-tbody', 9); return; }
+
+    const totalVehicles   = data.length;
+    const available       = data.filter(v => v.status === 'Available').length;
+    const rented          = data.filter(v => v.status === 'Rented').length;
+    const totalDays       = data.reduce((s,v) => s + v.total_days_rented, 0);
+    const totalEstRev     = data.reduce((s,v) => s + v.estimated_revenue, 0);
+    const topVehicle      = data[0];
+
+    document.getElementById('fleet-kpis').innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-icon">🚗</div>
+        <div class="kpi-value">${totalVehicles}</div>
+        <div class="kpi-label">Total Vehicles in Fleet</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-value">${available}</div>
+        <div class="kpi-label">Currently Available</div>
+      </div>
+      <div class="kpi-card yellow">
+        <div class="kpi-icon">🔑</div>
+        <div class="kpi-value">${rented}</div>
+        <div class="kpi-label">Currently On Rental</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-value">${fmtInt(totalDays)}</div>
+        <div class="kpi-label">Total Fleet Days Rented</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(totalEstRev)}</div>
+        <div class="kpi-label">Total Estimated Revenue</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-icon">🏅</div>
+        <div class="kpi-value">${topVehicle.total_rentals}</div>
+        <div class="kpi-label">Most Rentals — ${topVehicle.vehicle}</div>
+        <div class="kpi-note">${topVehicle.plate}</div>
+      </div>
+    `;
+
+    document.getElementById('fleet-charts').style.display = '';
+    const top8 = data.slice(0, 8);
+
+    destroyChart('fleetBar');
+    activeCharts['fleetBar'] = new Chart(document.getElementById('chartFleetBar'), {
+      type: 'bar',
+      data: {
+        labels: top8.map(v => v.vehicle.length > 20 ? v.vehicle.slice(0,20)+'…' : v.vehicle),
+        datasets: [{
+          label: 'Total Rentals',
+          data: top8.map(v => v.total_rentals),
+          backgroundColor: PALETTE.map(c => c + 'aa'),
+          borderColor: PALETTE,
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { display: false } } } }
+    });
+
+    const statusCounts = {};
+    data.forEach(v => { statusCounts[v.status] = (statusCounts[v.status] || 0) + 1; });
+    destroyChart('fleetDoughnut');
+    activeCharts['fleetDoughnut'] = new Chart(document.getElementById('chartFleetDoughnut'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(statusCounts),
+        datasets: [{ data: Object.values(statusCounts), backgroundColor: PALETTE, borderWidth: 2, borderColor: '#13141a' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+    });
+
+    // Populate category filter
+    const cats = [...new Set(data.map(v => v.category).filter(Boolean))].sort();
+    const catSel = document.getElementById('fleet-category');
+    catSel.innerHTML = '<option value="">All Categories</option>';
+    cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o); });
+
+    fleetData = data;
+    renderFleetTable(data);
+
+  } catch (e) { showError('fleet-kpis', 'fleet-tbody', 9, e.message); }
+}
+
+function renderFleetTable(rows) {
+  document.getElementById('fleet-table-count').textContent = `${fleetData.length} vehicles`;
+  if (!rows.length) {
+    document.getElementById('fleet-tbody').innerHTML = `<tr><td colspan="9"><div class="no-results"><div class="no-results-icon">🔍</div>No vehicles match your filters.</div></td></tr>`;
+    document.getElementById('fleet-filter-count').innerHTML = `<strong>0</strong> of ${fleetData.length}`;
+    return;
+  }
+  document.getElementById('fleet-filter-count').innerHTML = `<strong>${rows.length}</strong> of ${fleetData.length} vehicles`;
+  document.getElementById('fleet-tbody').innerHTML = rows.map((v, i) => {
+    const statusBadge = v.status === 'Available'
+      ? `<span class="badge badge-green">✅ Available</span>`
+      : v.status === 'Rented'
+      ? `<span class="badge badge-yellow">🔑 Rented</span>`
+      : `<span class="badge badge-red">⚙️ ${v.status}</span>`;
+    return `<tr>
+      <td class="mono muted">${i+1}</td>
+      <td><strong>${v.vehicle}</strong><br><span style="font-size:0.72rem;color:var(--text-muted);font-family:var(--mono)">${v.vehicle_id}</span></td>
+      <td class="mono">${v.plate}</td>
+      <td><span class="badge badge-blue">${v.category || '—'}</span></td>
+      <td>${statusBadge}</td>
+      <td class="mono">${CURRENCY} ${fmt(v.daily_rate)}</td>
+      <td class="mono">${fmtInt(v.total_rentals)}</td>
+      <td class="mono">${fmtInt(v.total_days_rented)}</td>
+      <td class="mono"><strong>${CURRENCY} ${fmt(v.estimated_revenue)}</strong></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterFleet() {
+  const q    = (document.getElementById('fleet-search').value || '').toLowerCase();
+  const st   = document.getElementById('fleet-status').value;
+  const cat  = document.getElementById('fleet-category').value;
+  const sort = document.getElementById('fleet-sort').value;
+
+  let d = fleetData.filter(v => {
+    if (q && ![v.vehicle, v.plate, v.vehicle_id, v.category].join(' ').toLowerCase().includes(q)) return false;
+    if (st  && v.status !== st)    return false;
+    if (cat && v.category !== cat) return false;
+    return true;
+  });
+
+  if (sort === 'rev-desc')       d.sort((a,b) => b.estimated_revenue - a.estimated_revenue);
+  else if (sort === 'rev-asc')   d.sort((a,b) => a.estimated_revenue - b.estimated_revenue);
+  else if (sort === 'rate-desc') d.sort((a,b) => b.daily_rate - a.daily_rate);
+  else if (sort === 'rate-asc')  d.sort((a,b) => a.daily_rate - b.daily_rate);
+  else if (sort === 'days-desc') d.sort((a,b) => b.total_days_rented - a.total_days_rented);
+  else if (sort === 'alpha')     d.sort((a,b) => a.vehicle.localeCompare(b.vehicle));
+  else if (fleetSortState.col) {
+    d.sort((a,b) => {
+      const av = a[fleetSortState.col] || 0, bv = b[fleetSortState.col] || 0;
+      if (typeof av === 'string') return fleetSortState.dir * av.localeCompare(bv);
+      return fleetSortState.dir * (av < bv ? -1 : av > bv ? 1 : 0);
+    });
+  } else {
+    d.sort((a,b) => b.total_rentals - a.total_rentals);
+  }
+  renderFleetTable(d);
+}
+
+function resetFleetFilters() {
+  ['fleet-search'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fleet-status').value = '';
+  document.getElementById('fleet-category').value = '';
+  document.getElementById('fleet-sort').value = '';
+  fleetSortState = { col: null, dir: 1 };
+  document.querySelectorAll('#panel-fleet .sort-th').forEach(th => th.className = 'sort-th');
+  renderFleetTable(fleetData);
+  document.getElementById('fleet-filter-count').innerHTML = '';
+}
+
+function fleetSortBy(col) {
+  if (fleetSortState.col === col) fleetSortState.dir *= -1;
+  else { fleetSortState.col = col; fleetSortState.dir = 1; }
+  document.querySelectorAll('#panel-fleet .sort-th').forEach(th => th.className = 'sort-th');
+  const th = document.querySelector(`#panel-fleet .sort-th[onclick="fleetSortBy('${col}')"]`);
+  if (th) th.className = 'sort-th ' + (fleetSortState.dir === 1 ? 'asc' : 'desc');
+  filterFleet();
+}
+
+/* ══════════════════════════════════
+   CUSTOMERS REPORT
+══════════════════════════════════ */
+async function loadCustomers() {
+  try {
+    const data = await fetchReport('customers');
+    document.getElementById('cust-meta').textContent = `Generated: ${now()}`;
+
+    if (!data.length) { showEmpty('cust-kpis', 'cust-tbody', 8); return; }
+
+    const total       = data.length;
+    const verified    = data.filter(c => c.is_verified).length;
+    const totalSpent  = data.reduce((s,c) => s + c.total_spent, 0);
+    const avgSpent    = total ? totalSpent / total : 0;
+    const topSpender  = data[0];
+    const totalRents  = data.reduce((s,c) => s + c.total_rentals, 0);
+
+    document.getElementById('cust-kpis').innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-value">${fmtInt(total)}</div>
+        <div class="kpi-label">Total Customers</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-value">${fmtInt(verified)}</div>
+        <div class="kpi-label">Verified Customers</div>
+        <div class="kpi-note">${total ? Math.round(verified/total*100) : 0}% of total</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-value">${fmtInt(totalRents)}</div>
+        <div class="kpi-label">Total Rentals Made</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(totalSpent)}</div>
+        <div class="kpi-label">Total Revenue from Customers</div>
+      </div>
+      <div class="kpi-card yellow">
+        <div class="kpi-icon">📐</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(avgSpent)}</div>
+        <div class="kpi-label">Avg Spend / Customer</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-icon">🏆</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(topSpender.total_spent)}</div>
+        <div class="kpi-label">Top Spender</div>
+        <div class="kpi-note">${topSpender.name}</div>
+      </div>
+    `;
+
+    document.getElementById('cust-charts').style.display = '';
+    const top8 = data.slice(0, 8);
+
+    destroyChart('custSpend');
+    activeCharts['custSpend'] = new Chart(document.getElementById('chartCustSpend'), {
+      type: 'bar',
+      data: {
+        labels: top8.map(c => c.name.split(' ')[0]),
+        datasets: [{
+          label: `Spent (${CURRENCY})`,
+          data: top8.map(c => c.total_spent),
+          backgroundColor: PALETTE.map(c => c + 'aa'),
+          borderColor: PALETTE,
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { callback: v => `E${(v/1000).toFixed(0)}k` } } } }
+    });
+
+    destroyChart('custVerified');
+    activeCharts['custVerified'] = new Chart(document.getElementById('chartCustVerified'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Verified', 'Pending Verification'],
+        datasets: [{ data: [verified, total - verified], backgroundColor: ['#4ade80aa', '#fbbf24aa'], borderColor: ['#4ade80', '#fbbf24'], borderWidth: 2 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+    });
+
+    custData = data;
+    renderCustTable(data);
+
+  } catch (e) { showError('cust-kpis', 'cust-tbody', 8, e.message); }
+}
+
+function renderCustTable(rows) {
+  document.getElementById('cust-table-count').textContent = `${custData.length} customers`;
+  if (!rows.length) {
+    document.getElementById('cust-tbody').innerHTML = `<tr><td colspan="8"><div class="no-results"><div class="no-results-icon">🔍</div>No customers match your filters.</div></td></tr>`;
+    document.getElementById('cust-filter-count').innerHTML = `<strong>0</strong> of ${custData.length}`;
+    return;
+  }
+  document.getElementById('cust-filter-count').innerHTML = `<strong>${rows.length}</strong> of ${custData.length} customers`;
+  document.getElementById('cust-tbody').innerHTML = rows.map((c, i) => `<tr>
+    <td class="mono">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`}</td>
+    <td><strong>${c.name}</strong></td>
+    <td class="mono muted">${c.id_no}</td>
+    <td class="muted">${c.email || '—'}</td>
+    <td class="mono">${c.phone || '—'}</td>
+    <td>${c.is_verified ? '<span class="badge badge-green">✅ Verified</span>' : '<span class="badge badge-yellow">⏳ Pending</span>'}</td>
+    <td class="mono">${fmtInt(c.total_rentals)}</td>
+    <td class="mono"><strong>${CURRENCY} ${fmt(c.total_spent)}</strong></td>
+  </tr>`).join('');
+}
+
+function filterCustomers() {
+  const q        = (document.getElementById('cust-search').value || '').toLowerCase();
+  const verified = document.getElementById('cust-verified').value;
+  const sort     = document.getElementById('cust-sort').value;
+  const minSpend = parseFloat(document.getElementById('cust-min-spend').value) || 0;
+
+  let d = custData.filter(c => {
+    if (q && ![c.name, c.id_no, c.email, c.phone].join(' ').toLowerCase().includes(q)) return false;
+    if (verified === 'verified' && !c.is_verified) return false;
+    if (verified === 'pending'  &&  c.is_verified) return false;
+    if (minSpend > 0 && c.total_spent < minSpend)  return false;
+    return true;
+  });
+
+  if (sort === 'rentals-desc')      d.sort((a,b) => b.total_rentals - a.total_rentals);
+  else if (sort === 'rentals-asc')  d.sort((a,b) => a.total_rentals - b.total_rentals);
+  else if (sort === 'spent-asc')    d.sort((a,b) => a.total_spent - b.total_spent);
+  else if (sort === 'alpha')        d.sort((a,b) => a.name.localeCompare(b.name));
+  else if (custSortState.col) {
+    d.sort((a,b) => {
+      const av = a[custSortState.col] || 0, bv = b[custSortState.col] || 0;
+      if (typeof av === 'string') return custSortState.dir * av.localeCompare(bv);
+      return custSortState.dir * (av < bv ? -1 : av > bv ? 1 : 0);
+    });
+  } else {
+    d.sort((a,b) => b.total_spent - a.total_spent);
+  }
+  renderCustTable(d);
+}
+
+function resetCustFilters() {
+  ['cust-search','cust-min-spend'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cust-verified').value = '';
+  document.getElementById('cust-sort').value = '';
+  custSortState = { col: null, dir: 1 };
+  document.querySelectorAll('#panel-customers .sort-th').forEach(th => th.className = 'sort-th');
+  renderCustTable(custData);
+  document.getElementById('cust-filter-count').innerHTML = '';
+}
+
+function custSortBy(col) {
+  if (custSortState.col === col) custSortState.dir *= -1;
+  else { custSortState.col = col; custSortState.dir = 1; }
+  document.querySelectorAll('#panel-customers .sort-th').forEach(th => th.className = 'sort-th');
+  const th = document.querySelector(`#panel-customers .sort-th[onclick="custSortBy('${col}')"]`);
+  if (th) th.className = 'sort-th ' + (custSortState.dir === 1 ? 'asc' : 'desc');
+  filterCustomers();
+}
+
+/* ══════════════════════════════════
+   LATE RETURNS REPORT
+══════════════════════════════════ */
+async function loadLateReturns() {
+  try {
+    const data = await fetchReport('late_returns');
+    document.getElementById('late-meta').textContent = `Generated: ${now()}`;
+
+    if (!data.length) {
+      document.getElementById('late-kpis').innerHTML = `
+        <div class="kpi-card green" style="grid-column:1/-1;text-align:center;padding:36px">
+          <div class="kpi-icon" style="font-size:2.5rem">🎉</div>
+          <div class="kpi-value" style="color:var(--green)">0</div>
+          <div class="kpi-label">No late returns on record — fleet is performing perfectly!</div>
+        </div>`;
+      document.getElementById('late-tbody').innerHTML = `<tr><td colspan="12"><div class="empty-state"><div class="empty-state-icon">✅</div>No late returns found.</div></td></tr>`;
+      return;
+    }
+
+    const totalLate     = data.length;
+    const totalFees     = data.reduce((s,r) => s + r.late_fee, 0);
+    const avgDaysLate   = data.reduce((s,r) => s + r.days_late, 0) / totalLate;
+    const worst         = data[0];
+    const avgFee        = totalFees / totalLate;
+
+    document.getElementById('late-kpis').innerHTML = `
+      <div class="kpi-card red">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-value">${fmtInt(totalLate)}</div>
+        <div class="kpi-label">Total Late Returns</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💸</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(totalFees)}</div>
+        <div class="kpi-label">Total Late Fees Charged</div>
+      </div>
+      <div class="kpi-card yellow">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-value">${avgDaysLate.toFixed(1)}</div>
+        <div class="kpi-label">Avg Days Late</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon">📐</div>
+        <div class="kpi-value">${CURRENCY} ${fmt(avgFee)}</div>
+        <div class="kpi-label">Avg Late Fee / Incident</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-icon">🚨</div>
+        <div class="kpi-value">${worst.days_late}d</div>
+        <div class="kpi-label">Worst Offender — ${worst.customer}</div>
+        <div class="kpi-note">${worst.vehicle} · ${worst.plate}</div>
+      </div>
+    `;
+
+    document.getElementById('late-charts').style.display = '';
+    const labels = data.map((r,i) => `#${r.rental_id}`);
+
+    destroyChart('lateDays');
+    activeCharts['lateDays'] = new Chart(document.getElementById('chartLateDays'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Days Late',
+          data: data.map(r => r.days_late),
+          backgroundColor: data.map(r => r.days_late > 7 ? 'rgba(248,113,113,0.7)' : r.days_late > 3 ? 'rgba(251,191,36,0.7)' : 'rgba(96,165,250,0.7)'),
+          borderColor: data.map(r => r.days_late > 7 ? '#f87171' : r.days_late > 3 ? '#fbbf24' : '#60a5fa'),
+          borderWidth: 1,
+          borderRadius: 5
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } } } }
+    });
+
+    destroyChart('lateFee');
+    activeCharts['lateFee'] = new Chart(document.getElementById('chartLateFee'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: `Late Fee (${CURRENCY})`,
+          data: data.map(r => r.late_fee),
+          backgroundColor: 'rgba(255,107,53,0.55)',
+          borderColor: '#ff6b35',
+          borderWidth: 1,
+          borderRadius: 5
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { callback: v => `E${v}` } } } }
+    });
+
+    lateData = data;
+    renderLateTable(data);
+
+  } catch (e) { showError('late-kpis', 'late-tbody', 12, e.message); }
+}
+
+function renderLateTable(rows) {
+  document.getElementById('late-table-count').textContent = `${lateData.length} incidents`;
+  if (!rows.length) {
+    document.getElementById('late-tbody').innerHTML = `<tr><td colspan="12"><div class="no-results"><div class="no-results-icon">🔍</div>No records match your filters.</div></td></tr>`;
+    document.getElementById('late-filter-count').innerHTML = `<strong>0</strong> of ${lateData.length}`;
+    return;
+  }
+  document.getElementById('late-filter-count').innerHTML = `<strong>${rows.length}</strong> of ${lateData.length} incidents`;
+  document.getElementById('late-tbody').innerHTML = rows.map(r => {
+    const sev = r.days_late > 7
+      ? `<span class="badge badge-red">🚨 Critical</span>`
+      : r.days_late > 3
+      ? `<span class="badge badge-yellow">⚠️ High</span>`
+      : `<span class="badge badge-blue">ℹ️ Low</span>`;
+    return `<tr>
+      <td class="mono">#${r.rental_id}</td>
+      <td><strong>${r.customer}</strong></td>
+      <td class="mono">${r.customer_phone || '—'}</td>
+      <td>${r.vehicle}</td>
+      <td class="mono">${r.plate}</td>
+      <td class="mono muted">${fmtDate(r.expected_return)}</td>
+      <td class="mono" style="color:var(--red)">${fmtDate(r.actual_return)}</td>
+      <td class="mono">${fmtInt(r.hours_late)}h</td>
+      <td class="mono"><strong>${r.days_late}d</strong></td>
+      <td class="mono">${CURRENCY} ${fmt(r.daily_rate)}</td>
+      <td class="mono"><strong style="color:var(--red)">${CURRENCY} ${fmt(r.late_fee)}</strong></td>
+      <td>${sev}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterLate() {
+  const q    = (document.getElementById('late-search').value || '').toLowerCase();
+  const sev  = document.getElementById('late-severity').value;
+  const from = document.getElementById('late-from').value;
+  const to   = document.getElementById('late-to').value;
+  const sort = document.getElementById('late-sort').value;
+
+  let d = lateData.filter(r => {
+    if (q && ![r.customer, r.customer_phone, r.plate, r.vehicle].join(' ').toLowerCase().includes(q)) return false;
+    if (sev === 'critical' && r.days_late <= 7)               return false;
+    if (sev === 'high'     && (r.days_late <= 3 || r.days_late > 7)) return false;
+    if (sev === 'low'      && r.days_late > 3)                return false;
+    if (from && r.actual_return && r.actual_return < from)    return false;
+    if (to   && r.actual_return && r.actual_return > to)      return false;
+    return true;
+  });
+
+  if (sort === 'fee-desc')        d.sort((a,b) => b.late_fee - a.late_fee);
+  else if (sort === 'fee-asc')    d.sort((a,b) => a.late_fee - b.late_fee);
+  else if (sort === 'days-asc')   d.sort((a,b) => a.days_late - b.days_late);
+  else if (sort === 'date-desc')  d.sort((a,b) => (b.actual_return||'').localeCompare(a.actual_return||''));
+  else if (sort === 'date-asc')   d.sort((a,b) => (a.actual_return||'').localeCompare(b.actual_return||''));
+  else if (lateSortState.col) {
+    d.sort((a,b) => {
+      const av = a[lateSortState.col] || 0, bv = b[lateSortState.col] || 0;
+      if (typeof av === 'string') return lateSortState.dir * av.localeCompare(bv);
+      return lateSortState.dir * (av < bv ? -1 : av > bv ? 1 : 0);
+    });
+  } else {
+    d.sort((a,b) => b.days_late - a.days_late);
+  }
+  renderLateTable(d);
+}
+
+function resetLateFilters() {
+  ['late-search','late-from','late-to'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('late-severity').value = '';
+  document.getElementById('late-sort').value = '';
+  lateSortState = { col: null, dir: 1 };
+  document.querySelectorAll('#panel-late_returns .sort-th').forEach(th => th.className = 'sort-th');
+  renderLateTable(lateData);
+  document.getElementById('late-filter-count').innerHTML = '';
+}
+
+function lateSortBy(col) {
+  if (lateSortState.col === col) lateSortState.dir *= -1;
+  else { lateSortState.col = col; lateSortState.dir = 1; }
+  document.querySelectorAll('#panel-late_returns .sort-th').forEach(th => th.className = 'sort-th');
+  const th = document.querySelector(`#panel-late_returns .sort-th[onclick="lateSortBy('${col}')"]`);
+  if (th) th.className = 'sort-th ' + (lateSortState.dir === 1 ? 'asc' : 'desc');
+  filterLate();
+}
+
+/* ── Helper: empty & error states ── */
+function showEmpty(kpiId, tbodyId, cols) {
+  document.getElementById(kpiId).innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📭</div>No data available.</div>`;
+  document.getElementById(tbodyId).innerHTML = `<tr><td colspan="${cols}"><div class="empty-state"><div class="empty-state-icon">📭</div>No records found.</div></td></tr>`;
+}
+function showError(kpiId, tbodyId, cols, msg) {
+  document.getElementById(kpiId).innerHTML = `<div class="empty-state" style="grid-column:1/-1;color:var(--red)"><div class="empty-state-icon">⚠️</div>Failed to load: ${msg}</div>`;
+  document.getElementById(tbodyId).innerHTML = `<tr><td colspan="${cols}" style="color:var(--red);text-align:center;padding:32px">Error loading report data: ${msg}</td></tr>`;
+}
+
+/* ── Auto-load first report on page load ── */
+(async () => {
+  // Deep-link support: reports.html#fleet jumps straight to Fleet report
+  const hashReport  = window.location.hash.replace('#', '');
+  const validReports = ['revenue', 'fleet', 'customers', 'late_returns'];
+  const startReport  = validReports.includes(hashReport) ? hashReport : 'revenue';
+
+  // Activate correct sidebar nav + panel
+  const startNav = document.querySelector(`.nav-item[data-report="${startReport}"]`);
+  if (startNav) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    startNav.classList.add('active');
+    document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + startReport).classList.add('active');
+    document.getElementById('topbarBadge').textContent = startNav.textContent.trim();
+  }
+
+  // Test connection first — shows a clear error banner if anything is wrong
+  const ok = await testConnection();
+  if (ok) loadReport(startReport);
+})();
+</script>
+</body>
+</html>
