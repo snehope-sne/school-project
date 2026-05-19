@@ -1,13 +1,17 @@
 <?php
-require_once 'db_connection.php';
+// ── CORS Headers ─────────────────────────────────────────────
+header("Access-Control-Allow-Origin: https://school-project-1-xdoe.onrender.com");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Credentials: true");
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit(); }
+// ─────────────────────────────────────────────────────────────
 
+require_once 'db_connection.php';
 
 error_reporting(0);
 ini_set('display_errors', 0);
-
 header('Content-Type: application/json');
-
-
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -17,134 +21,68 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // --- Input Validation ---
 $errors   = [];
-$email    = trim($_POST['email'] ?? '');
-$password = $_POST['password'] ?? '';
+$fullName = trim($_POST['fullName'] ?? '');
+$email    = trim($_POST['email']    ?? '');
+$phone    = trim($_POST['phone']    ?? '');
+$role     = trim($_POST['role']     ?? '');
+$password = $_POST['password']      ?? '';
 
-if (empty($email)) {
-    $errors[] = 'Email is required.';
-} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'Invalid email address format.';
-}
-
-if (empty($password)) {
-    $errors[] = 'Password is required.';
-}
+if (empty($fullName)) $errors[] = 'Full name is required.';
+if (empty($email))    $errors[] = 'Email is required.';
+elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Invalid email address.';
+if (empty($phone))    $errors[] = 'Phone number is required.';
+if (empty($role))     $errors[] = 'Role is required.';
+elseif (!in_array($role, ['admin', 'rental_agent'])) $errors[] = 'Invalid role selected.';
+if (empty($password)) $errors[] = 'Password is required.';
+elseif (strlen($password) < 8) $errors[] = 'Password must be at least 8 characters.';
 
 if (!empty($errors)) {
     http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Validation failed.', 'errors' => $errors]);
+    echo json_encode(['status' => 'error', 'message' => implode(' ', $errors)]);
     exit();
 }
 
-// --- Database Operations ---
+// Split full name into first and last
+$nameParts = explode(' ', $fullName, 2);
+$firstName = $nameParts[0];
+$lastName  = $nameParts[1] ?? '';
+
 try {
-
-    // -------------------------------------------------------
-    // 1. Check EMPLOYEE table first (uses pass_hash column)
-    // -------------------------------------------------------
-    $empStmt = $conn->prepare("SELECT EMP_ID, EMP_FNAME, EMP_LNAME, ROLE, pass_hash FROM employee WHERE EMAIL = ? LIMIT 1");
-    if ($empStmt === false) throw new Exception('Server error: Failed to prepare employee statement.');
-    $empStmt->bind_param("s", $email);
-    $empStmt->execute();
-    $empResult = $empStmt->get_result();
-
-    if ($empResult->num_rows === 1) {
-        $emp = $empResult->fetch_assoc();
-        $empStmt->close();
-
-        if (password_verify($password, $emp['pass_hash'])) {
-            $role = strtolower(trim($emp['ROLE']));
-
-            // Admins are not permitted to log in through this endpoint
-            if ($role === 'admin') {
-                http_response_code(403);
-                echo json_encode([
-                    'status'   => 'error',
-                    'message'  => 'Access denied. Admins must use the admin login portal.',
-                    'redirect' => 'login.html'
-                ]);
-                exit();
-            }
-
-            $initials = strtoupper(substr($emp['EMP_FNAME'], 0, 1) . substr($emp['EMP_LNAME'], 0, 1));
-
-            // Determine redirect based on role
-            $redirect = match ($role) {
-                'rental agent', 'rental_agent' => 'rental_dashboard.html',
-                default                         => 'rental_dashboard.html'
-            };
-
-            http_response_code(200);
-            echo json_encode([
-                'status'   => 'success',
-                'message'  => 'Login successful!',
-                'redirect' => $redirect,
-                'user'     => [
-                    'id'       => $emp['EMP_ID'],
-                    'name'     => $emp['EMP_FNAME'] . ' ' . $emp['EMP_LNAME'],
-                    'email'    => $email,
-                    'role'     => $role,
-                    'initials' => $initials
-                ]
-            ]);
-        } else {
-            http_response_code(401);
-            echo json_encode(['status' => 'error', 'message' => 'Invalid email or password.']);
-        }
+    // Check if email already exists
+    $stmt = $conn->prepare("SELECT EMP_ID FROM employee WHERE EMAIL = ? LIMIT 1");
+    if ($stmt === false) throw new Exception('Database error: ' . $conn->error);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    if ($stmt->get_result()->num_rows > 0) {
+        http_response_code(409);
+        echo json_encode(['status' => 'error', 'message' => 'An account with this email already exists.']);
         exit();
     }
-    $empStmt->close();
+    $stmt->close();
 
-    // -------------------------------------------------------
-    // 2. Not an employee — check CUSTOMER table (uses Password_Hash column)
-    // -------------------------------------------------------
-    $custStmt = $conn->prepare("SELECT Cust_National_ID, First_Name, Last_Name, Email, Password_Hash FROM customer WHERE Email = ? LIMIT 1");
-    if ($custStmt === false) throw new Exception('Server error: Failed to prepare customer statement.');
-    $custStmt->bind_param("s", $email);
-    $custStmt->execute();
-    $custResult = $custStmt->get_result();
+    // Hash password
+    $passHash = password_hash($password, PASSWORD_DEFAULT);
 
-    if ($custResult->num_rows === 1) {
-        $user = $custResult->fetch_assoc();
-        $custStmt->close();
+    // Insert new employee
+    $stmt = $conn->prepare("INSERT INTO employee (EMP_FNAME, EMP_LNAME, EMAIL, PHONE, ROLE, pass_hash) VALUES (?, ?, ?, ?, ?, ?)");
+    if ($stmt === false) throw new Exception('Database error: ' . $conn->error);
+    $stmt->bind_param("ssssss", $firstName, $lastName, $email, $phone, $role, $passHash);
 
-        if (password_verify($password, $user['Password_Hash'])) {
-            http_response_code(200);
-            echo json_encode([
-                'status'   => 'success',
-                'message'  => 'Login successful!',
-                'redirect' => 'index.html',
-                'user'     => [
-                    'id'        => $user['Cust_National_ID'],
-                    'firstName' => $user['First_Name'],
-                    'lastName'  => $user['Last_Name'],
-                    'email'     => $user['Email'],
-                    'role'      => 'customer'
-                ]
-            ]);
-        } else {
-            http_response_code(401);
-            echo json_encode(['status' => 'error', 'message' => 'Invalid email or password.']);
-        }
-        exit();
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to create employee account: ' . $stmt->error);
     }
-    $custStmt->close();
+    $stmt->close();
 
-    // -------------------------------------------------------
-    // 3. Email not found in either table
-    // -------------------------------------------------------
-    http_response_code(401);
-    echo json_encode(['status' => 'error', 'message' => 'Invalid email or password.']);
+    http_response_code(201);
+    echo json_encode([
+        'status'  => 'success',
+        'message' => 'Employee account created successfully!'
+    ]);
 
 } catch (Throwable $e) {
     http_response_code(500);
-    echo json_encode([
-        'status'  => 'error',
-        'message' => $e->getMessage()
-    ]);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 } finally {
-    if (isset($conn) && $conn instanceof mysqli) {
-        $conn->close();
-    }
+    if (isset($conn) && $conn instanceof mysqli) $conn->close();
 }
 ?>
