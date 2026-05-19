@@ -1,49 +1,12 @@
 <?php
-header("Access-Control-Allow-Origin https://school-project-psaa.onrender.com");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
+require_once 'db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-// ============================================================
-//  DARKETZ Car Rental — Customer Profile Operations
-//
-//  GET  ?action=get          → load full profile by email
-//  POST ?action=update       → update personal info
-//  POST ?action=update_kin   → upsert next of kin
-//  POST ?action=upload_photo → upload profile picture
-//  POST ?action=upload_licence → upload licence front/back images
-//  POST ?action=change_password → change password
-//  GET  ?action=bookings     → customer booking history
-//  POST ?action=delete       → permanently delete account
-//
-//  Schema (CAR_RENTAL_MANAGEMENT3):
-//    customer    → PK: Cust_National_ID (VARCHAR)
-//    next_of_kin → PK: Cust_National_ID + Phone
-//    license     → PK: License_No
-//    rental      → FK: CUST_ID → customer.Cust_National_ID
-// ============================================================
-
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
 
 error_reporting(0);
 ini_set('display_errors', 0);
 header('Content-Type: application/json');
 
-require_once 'db_connection.php';
+
 
 // ── File upload directory (relative to this script) ──────────
 define('UPLOAD_DIR',       __DIR__ . '/uploads/profiles/');

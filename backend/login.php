@@ -1,16 +1,5 @@
 <?php
-// ── CORS Headers ─────────────────────────────────────────────
-header("Access-Control-Allow-Origin: https://school-project-1-xdoe.onrender.com");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
-
-// Handle preflight OPTIONS request and stop
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-// ─────────────────────────────────────────────────────────────
+require_once 'db_connection.php';
 
 error_reporting(0);
 ini_set('display_errors', 0);

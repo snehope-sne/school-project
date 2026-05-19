@@ -1,36 +1,5 @@
 <?php
-// ============================================================
-//  DARKETZ Car Rental — Rental Operations
-//
-//  GET  ?action=list                 → all rentals with customer + vehicle info
-//  POST ?action=create               → create a new rental
-//       Body: cust_id, vin, start_date, return_date,
-//             purpose, mileage, emp_id
-//
-//  Schema column mapping (old → actual DB):
-//    VEHICLE.VEHICLE_ID   → vehicle.VIN             (VARCHAR PK)
-//    RENTAL.VEHICLE_ID    → rental.VIN
-//    RENTAL.CUST_ID       → rental.CUST_ID           (FK → customer.Cust_National_ID)
-//    RENTAL.EX_RETURN_DATE→ rental.RETURN_DATE
-//    CUSTOMER.CUST_ID     → customer.Cust_National_ID
-//    CUSTOMER.CUST_FNAME  → customer.First_Name
-//    CUSTOMER.CUST_LNAME  → customer.Last_Name
-//    VEHICLE.BRAND+MAKE   → vehicle.BRAND + vehicle.MAKE  (same columns, same logic)
-//    RENT table           → employee table (EMP_ID check moved to employee)
-//    RENTAL.RENTAL_ID     → rental.RENTAL_ID         (same, auto-increment)
-// ============================================================
-
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
+require_once 'db_connection.php';
 
 error_reporting(0);
 ini_set('display_errors', 0);

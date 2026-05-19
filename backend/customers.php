@@ -1,43 +1,13 @@
 <?php
-header("Access-Control-Allow-Origin: https://https://school-project-psaa.onrender.com");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-// ============================================================
-//  DARKETZ Car Rental — Customer Operations
-//
-//  GET  ?action=list            → all customers (table view)
-//  GET  ?action=lookup&id_no=  → find by National ID (step 0 lookup)
-//  GET  ?action=profile&cust_id= → full profile incl. license images + kin
-//  POST ?action=verify          → mark customer as verified (Is_Verified = 1)
-//       Body: cust_id
-//  POST ?action=walkin          → register walk-in customer
-//       Body: fname, lname, id_no, phone, email, address,
-//             kin_fname, kin_lname, kin_phone
-// ============================================================
+require_once 'db_connection.php';
 
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
 
 error_reporting(0);
 ini_set('display_errors', 0);
 header('Content-Type: application/json');
 
-require_once 'db_connection.php';
+
 
 $rawInput  = file_get_contents('php://input');
 $jsonInput = json_decode($rawInput, true) ?? [];

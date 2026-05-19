@@ -1,33 +1,5 @@
 <?php
-// ============================================================
-//  DARKETZ Car Rental — Return Operations  (v3 — Late Fee Edition)
-//
-//  GET  ?action=pending              → active rentals awaiting return
-//  GET  ?action=charge_table         → load late_charge_rate rows
-//  GET  ?action=receipt&rental_id=X  → full receipt data for a return
-//  POST ?action=process              → process a vehicle return
-//       Body: rental_id, comments, actual_date, hours_late, late_charge
-//  POST ?action=save_charge_table    → upsert late_charge_rate rows
-//       Body: JSON array [{hours_late, rate_bracket, charge_amount}]
-//
-//  Late fee charge table (DB): late_charge_rate
-//    HOURS_LATE   TINYINT    1–4  (hours late bracket)
-//    RATE_BRACKET DECIMAL    daily rate bracket (400,450,500,550,600,700,900)
-//    CHARGE_AMOUNT DECIMAL   fee in Emalangeni
-// ============================================================
-
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
-
+require_once 'db_connection.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 set_exception_handler(function($e) {
@@ -37,7 +9,7 @@ set_exception_handler(function($e) {
 });
 header('Content-Type: application/json');
 
-require_once 'db_connection.php';
+
 
 $action = strtolower(trim($_GET['action'] ?? $_POST['action'] ?? ''));
 

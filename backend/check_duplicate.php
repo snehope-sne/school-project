@@ -1,38 +1,8 @@
 <?php
-header("Access-Control-Allow-Origin: https://school-project-psaa.onrender.com");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-/**
- * check_duplicate.php
- * Called by registration.js to check if a National ID or email already exists
- * before the user submits the full form.
- *
- * POST params:
- *   checkType  - 'id' or 'email'
- *   value      - the value to check
- *
- * Response JSON:
- *   { "exists": true|false, "message": "..." }
- */
 
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-}
+require_once 'db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    }
-    exit(0);
-}
 
 error_reporting(0);
 ini_set('display_errors', 0);
@@ -44,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-require_once 'db_connection.php';
+
 
 $checkType = trim($_POST['checkType'] ?? '');
 $value     = trim($_POST['value']     ?? '');

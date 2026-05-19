@@ -1,32 +1,5 @@
 <?php
-// ============================================================
-//  DARKETZ Car Rental — Reports
-//  GET ?action=revenue | fleet | customers | late_returns
-//
-//  Schema column mapping (old → actual DB):
-//    VEHICLE.VEHICLE_ID   → vehicle.VIN             (VARCHAR PK)
-//    RENTAL.EX_RETURN_DATE→ rental.RETURN_DATE
-//    RENTAL.VEHICLE_ID    → rental.VIN
-//    CUSTOMER.CUST_ID     → customer.Cust_National_ID
-//    CUSTOMER.CUST_FNAME  → customer.First_Name
-//    CUSTOMER.CUST_LNAME  → customer.Last_Name
-//    CUSTOMER.ID_NO       → customer.Cust_National_ID
-//    CUSTOMER.IS_VERIFIED → customer.Is_Verified
-//    LATE_RETURN table    → does not exist in new schema;
-//                           late detection uses re_turn.IS_LATE + RETURN_DATE vs ACTUAL_DATE
-// ============================================================
-
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
-
+require_once 'db_connection.php';
 error_reporting(0);
 ini_set('display_errors', 0);
 header('Content-Type: application/json');

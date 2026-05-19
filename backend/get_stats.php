@@ -1,25 +1,7 @@
 <?php
-// ============================================================
-//  DARKETZ Car Rental — Dashboard Stats
-//  GET  → returns live counts for the 4 stat cards
-//
-//  Schema column mapping (old → actual DB):
-//    VEHICLE_STATUS       → VEHICLE_STATUS          (same)
-//    RENTAL.EX_RETURN_DATE→ rental.RETURN_DATE
-//    RE_TURN.RETURN_ID    → re_turn.RETURN_ID        (same)
-//    RENTAL.RENTAL_ID     → rental.RENTAL_ID         (same)
-// ============================================================
 
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
+require_once 'db_connection.php';
+
 
 error_reporting(0);
 ini_set('display_errors', 0);

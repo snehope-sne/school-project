@@ -1,33 +1,11 @@
 <?php
-// ============================================================
-//  DARKETZ Car Rental — Vehicle Operations
-//
-//  GET  ?action=list                 → all vehicles with status
-//  GET  ?action=available            → only Available vehicles (for rental picker)
-//  POST ?action=add                  → add new vehicle (multipart: image upload)
-//  POST ?action=edit                 → edit existing vehicle
-//  POST ?action=toggle_status        → toggle Available ↔ Maintenance
-//       Body: vehicle_id (VIN), status (optional override)
-// ============================================================
-
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
-
+require_once 'db_connection.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 0);  // MUST be 0 — PHP notices printed to output corrupt JSON
 ini_set('log_errors', 1);          // errors go to server error log instead
 header('Content-Type: application/json');
 
-require_once 'db_connection.php';
+
 
 $action = strtolower(trim($_GET['action'] ?? $_POST['action'] ?? ''));
 

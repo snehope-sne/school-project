@@ -1,58 +1,12 @@
 <?php
-header("Access-Control-Allow-Origin: https://school-project-psaa.onrender.com");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
+require_once 'db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
-// ============================================================
-//  DARKETZ Car Rental — Booking Operations
-//
-//  POST ?action=submitwithpayment → full booking + payment
-//  GET  ?action=getaccount        → customer account lookup
-//  GET  ?action=getprofile        → customer profile by email
-//  GET  ?action=list              → all bookings (admin)
-//  GET  ?action=get               → single booking
-//  POST ?action=cancel            → cancel booking
-//  POST ?action=return            → mark vehicle returned
-//
-//  New table: customer_account (see SQL below)
-//  ──────────────────────────────────────────────
-//  CREATE TABLE customer_account (
-//      ACC_ID          INT AUTO_INCREMENT PRIMARY KEY,
-//      CUST_ID         VARCHAR(20) NOT NULL,
-//      ACC_NO          VARCHAR(50) NOT NULL UNIQUE,
-//      ACC_HOLDER_NAME VARCHAR(100) NOT NULL,
-//      BANK_NAME       VARCHAR(100),
-//      PIN_HASH        VARCHAR(255) NOT NULL,
-//      BALANCE         DECIMAL(10,2) DEFAULT 0.00,
-//      CREATED_AT      DATETIME DEFAULT CURRENT_TIMESTAMP,
-//      UPDATED_AT      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-//      FOREIGN KEY (CUST_ID) REFERENCES customer(Cust_National_ID)
-//  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-// ============================================================
-
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
-}
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    exit(0);
-}
 
 error_reporting(0);
 ini_set('display_errors', 0);
 header('Content-Type: application/json');
 
-require_once 'db_connection.php';
 
 $rawInput  = file_get_contents('php://input');
 $jsonInput = json_decode($rawInput, true) ?? [];
