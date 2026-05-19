@@ -139,7 +139,7 @@ async function checkDuplicate(type, value) {
         formData.append('checkType', type);
         formData.append('value', value);
 
-        const response = await fetch('../backend/check_duplicate.php', {
+        const response = await fetch('https://school-project-psaa.onrender.com/check_duplicate.php', {
             method: 'POST',
             credentials: 'include',
             body: formData
@@ -591,7 +591,7 @@ registrationForm.addEventListener('submit', async (e) => {
         formData.append('licenseFront', document.getElementById('license_front').files[0]);
         formData.append('licenseBack',  document.getElementById('license_back').files[0]);
 
-        const response = await fetch('../backend/register.php', {
+        const response = await fetch('https://school-project-psaa.onrender.com/register.php', {
             method: 'POST',
             credentials: 'include',
             body: formData

@@ -11,7 +11,7 @@
 })();
 
 // ── Config ───────────────────────────────────────────────────
-const BOOKING_API = '../backend/booking.php';   // adjust path if needed
+const BOOKING_API = 'https://school-project-psaa.onrender.com/booking.php';   // adjust path if needed
 
 // ── Booking Fee Policy ────────────────────────────────────────
 // Returns { fee, label } based on how many days ahead the pickup is

@@ -1,5 +1,5 @@
 // ── API helper ───────────────────────────────────────────────
-const VEHICLES_API = '../backend/vehicles.php';
+const VEHICLES_API = 'https://school-project-psaa.onrender.com/vehicles.php';
 
 async function fetchVehiclesFromAPI() {
     try {

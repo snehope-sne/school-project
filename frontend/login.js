@@ -148,7 +148,7 @@ loginForm.addEventListener('submit', async (e) => {
 
     try {
         // ── REAL API CALL to /backend/login.php ──────────────────────
-        const response = await fetch('../backend/login.php', {
+        const response = await fetch('https://school-project-psaa.onrender.com/login.php', {
             method: 'POST',
             credentials: 'include',                               // send/receive cookies
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -177,7 +177,7 @@ loginForm.addEventListener('submit', async (e) => {
 
         // Role-based redirect — backend tells us where to go
         setTimeout(() => {
-            window.location.href = '/RENT2/' + (data.redirect || 'index.html');
+            window.location.href = 'https://school-project-1-xdoe.onrender.com/' + (data.redirect || 'index.html');
             console.log(sessionStorage.getItem('dashboardUser'));
         }, 3000);
 

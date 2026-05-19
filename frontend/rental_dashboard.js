@@ -10,7 +10,7 @@
 //   Same folder:        const API_BASE = '';
 //   Sub-folder:         const API_BASE = '/backend';
 //   Remote server:      const API_BASE = 'https://your-server.com/api';
-const API_BASE = '/backend';   // ← EDIT THIS
+const API_BASE = 'https://https://school-project-psaa.onrender.com';
 
 /* ===================== APP STATE ===================== */
 let currentUser       = null;
@@ -114,7 +114,7 @@ function initLogin() {
 
     // Nothing valid found — redirect to login
     console.warn('[DARKETZ] No valid session found. Keys checked:', KEYS, '— redirecting to login.');
-    window.location.href = '/RENT2/login.html';
+   window.location.href = 'https://school-project-1-xdoe.onrender.com/login.html';
 }
 
 function launchDashboard(user) {
