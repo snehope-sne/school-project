@@ -38,15 +38,5 @@ if (!$conn->set_charset("utf8mb4")) {
     error_log("Error loading character set utf8mb4: " . $conn->error);
 }
 
-// TEMPORARY DEBUG - remove after testing
-echo json_encode([
-    'status' => 'debug',
-    'connected' => $conn ? 'yes' : 'no',
-    'error' => $conn->connect_error ?? 'none',
-    'host' => DB_HOST,
-    'port' => DB_PORT,
-    'user' => DB_USER,
-    'db' => DB_NAME
-]);
-exit();
+
 ?>
