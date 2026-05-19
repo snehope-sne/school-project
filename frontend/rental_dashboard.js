@@ -10,7 +10,7 @@
 //   Same folder:        const API_BASE = '';
 //   Sub-folder:         const API_BASE = '/backend';
 //   Remote server:      const API_BASE = 'https://your-server.com/api';
-const API_BASE = 'https://https://school-project-psaa.onrender.com';
+const API_BASE = 'https://school-project-psaa.onrender.com';
 
 /* ===================== APP STATE ===================== */
 let currentUser       = null;
