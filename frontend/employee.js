@@ -329,7 +329,7 @@ registrationForm.addEventListener('submit', async (e) => {
 
     try {
         // ── REAL API CALL to /backend/employee_registration.php ──────
-        const response = await fetch('../backend/employee.php', {
+        const response = await fetch('https://school-project-psaa.onrender.com/employee.php', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -359,7 +359,7 @@ registrationForm.addEventListener('submit', async (e) => {
 
         // Redirect to login after success
         setTimeout(() => {
-            window.location.href = 'login.html';
+            window.location.href = 'https://school-project-1-xdoe.onrender.com/login.html';
         }, 2000);
 
     } catch (error) {
